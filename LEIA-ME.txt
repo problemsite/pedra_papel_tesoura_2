@@ -1,0 +1,69 @@
+O que ganha de...? — arquivos do site
+==========================================
+
+COMO SUBIR NO GITHUB
+1. No repositório "(nome do repositório, descoberto pelo link)", apague os arquivos antigos do jogo
+   (adm.html, comum.js, firebase-config.js, database.rules.json e o index.html antigo).
+2. Envie TUDO deste ZIP (index.html, favicon.png, as pastas IMG, SOM e ADM).
+3. Pronto: o jogo fica em problemsite.github.io/<repositório>/
+   e o painel ao vivo em problemsite.github.io/<repositório>/ADM/
+
+TRAVA E FIREBASE ÚNICO
+- O jogo usa a trava do site principal (/trava.js) e o Firebase único "jogos-github".
+- O nome do site é o do repositório, pego do link; os dados ficam em sites/<esse nome>/.
+- Liberar/bloquear o jogo e a senha dos jogadores: pela Central, como nos outros sites.
+- Abra o ADM uma vez no navegador da equipe: ele avisa a Central sozinho quais
+  pastas os jogadores podem gravar (players, game, presenca).
+- O ADM só abre para o navegador da equipe.
+
+TESTAR NO PC
+- Abra o index.html direto (duplo clique): roda em modo teste local.
+  Abra numa segunda aba para o 2º jogador, e ADM/index.html para o painel.
+
+EDITAR
+- Tudo (roteiro, animações, posições, fases, sons...) se edita na engine local
+  (engine.html). Depois é só exportar de novo e substituir os arquivos.
+- Para continuar editando depois, use "📂 Abrir" na engine e escolha este ZIP
+  (ou o arquivo de projeto .json).
+
+ARQUIVOS
+- index.html
+- IMG/rocha-cinzenta-isolada-em-fundo-transpar.webp
+- IMG/transparent-image-lined-paper-school-boo.webp
+- IMG/scissors-png-image.webp
+- IMG/pngtree-detailed-3d-render-of-a-single-b.webp
+- IMG/white-blood-cell-3d-realistic-icon-analy.webp
+- IMG/brown-sand-pile-with-transparent-backgro.webp
+- IMG/pngtree-3d-realistic-fire-ant-with-detai.webp
+- IMG/canva-inseto-aranha-fofo-mag1eueizxe.webp
+- IMG/pngtree-realistic-gecko-illustration-png.webp
+- IMG/cute-pink-snake-png.webp
+- IMG/pngtree-red-tailed-hawk-swoops-with-fier.webp
+- IMG/pngtree-an-image-of-pigeon-png-image-199.webp
+- IMG/pngtree-brown-bear-wild-animal-transpare.webp
+- IMG/bee-tree-hive-clipart-design-illustratio.webp
+- IMG/majestic-african-elephant-with-raised-tr.webp
+- IMG/pngtree-mouse-animal-rat-png-image-14602.webp
+- IMG/pngtree-blue-whale-picture-png-image-152.webp
+- IMG/pngtree-cruise-ship-3d-render-png-image.webp
+- IMG/pngtree-burj-khalifa-illuminated-at-nigh.webp
+- IMG/high-mountain-peak-covered-in-snow-with.webp
+- IMG/pngtree-staircase-texture-png-image-1897.webp
+- IMG/pngtree-dark-storm-clouds-with-electric.webp
+- IMG/pngtree-mountains-silhouette-png-png-ima.webp
+- IMG/431645e46fbed475888fa133c024d036-mapa-do.webp
+- IMG/pangeia.webp
+- IMG/pngtree-full-moon-large-photo-png-image.webp
+- IMG/pngtree-jupiter-planet-image-on-white-ba.webp
+- IMG/pngtree-nebula-aesthetic-png-clipart-col.webp
+- IMG/telescope-clipart-design-illustration-fr.webp
+- IMG/pngtree-galaxy-milky-way-concept-png-ima.webp
+- IMG/pngtree-exploring-the-relationship-betwe.webp
+- IMG/pic2.webp
+- IMG/marvel-comics-logo-png-seeklogo-88891.webp
+- IMG/google-png19644.webp
+- IMG/infinity-symbol-icon-png.webp
+- IMG/9175124.webp
+- favicon.png
+- ADM/index.html
+- LEIA-ME.txt
