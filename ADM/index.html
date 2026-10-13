@@ -291,7 +291,9 @@ body.nonome .ent .name{display:none}
 .btnbox{pointer-events:none}.btnbox>button{pointer-events:auto}
 #nextBtn{visibility:hidden}
 #nextBtn.show{visibility:visible}
-#game.resultado [data-l="send"]{visibility:hidden}
+#game [data-l="next"]{display:none}
+#game.resultado [data-l="next"]{display:flex}
+#game.resultado [data-l="send"]{display:none}
 .overlay{pointer-events:none;z-index:20}
 .bigword{font-family:var(--display);line-height:1;color:#fff;-webkit-text-stroke:.04em var(--edge);paint-order:stroke fill;text-shadow:0 .07em 0 var(--edge),0 0 40px rgba(255,255,255,.6);opacity:0}
 .bigword.red{color:var(--bad)}
@@ -1820,8 +1822,8 @@ window.PADRAO={
     for(const j in b.layout)if(!c.layout[j])c.layout[j]=JSON.parse(JSON.stringify(b.layout[j]));
     /* posições antigas da corrente/botão próximo -> novas (centralizadas) */
     const same=(a,o)=>a&&Object.keys(o).every(k=>a[k]===o[k]);
-    const OLD={chain:[{x:40,y:955,w:1160,h:90},{x:420,y:950,w:760,h:90}],next:[{x:1200,y:965,w:200,h:72},{x:1200,y:959,w:200,h:72}],
-      answer:[{x:420,y:840,w:760,h:84}],send:[{x:1200,y:840,w:200,h:84}],echain:[{x:160,y:720,w:1240,h:300}]};
+    const OLD={chain:[{x:40,y:955,w:1160,h:90},{x:420,y:950,w:760,h:90}],next:[{x:1200,y:965,w:200,h:72},{x:1200,y:959,w:200,h:72},{x:1250,y:840,w:165,h:84}],
+      answer:[{x:420,y:840,w:760,h:84},{x:460,y:840,w:600,h:84}],send:[{x:1200,y:840,w:200,h:84},{x:1075,y:840,w:160,h:84}],echain:[{x:160,y:720,w:1240,h:300}]};
     for(const k in OLD)if(OLD[k].some(o=>same(c.layout[k],o)))c.layout[k]=JSON.parse(JSON.stringify(b.layout[k]));
     if(!c.anims.entrada)c.anims.entrada=b.anims.entrada;
     for(const k in c.anims){const a=c.anims[k]||(c.anims[k]={});a.tracks=a.tracks||{};a.tracks.att=a.tracks.att||[];a.tracks.def=a.tracks.def||[];a.events=a.events||[];a.nome=a.nome||k;a.tipo=a.tipo||'vitoria';}
@@ -1868,7 +1870,8 @@ function novoProjeto(modelo){return{roteiroVersao:7,nome:'O que ganha de',cfg:mo
 const ROTEIRO_VERSAO=7;
 let migrou=false;
 function completarProjeto(p){
-  p=p||{};p.cfg=PADRAO.completar(p.cfg||PADRAO.novo());p.assets=p.assets||{};p.export=Object.assign(clone(EXPORT0),p.export||{});p.nome=p.nome||'O que ganha de';
+  p=p||{};const lay0=JSON.stringify((p.cfg&&p.cfg.layout)||null);p.cfg=PADRAO.completar(p.cfg||PADRAO.novo());
+  if(lay0!=='null'&&lay0!==JSON.stringify(p.cfg.layout))migrou=true;p.assets=p.assets||{};p.export=Object.assign(clone(EXPORT0),p.export||{});p.nome=p.nome||'O que ganha de';
   /* o nome fixo antigo travava o site errado: agora o padrão é descobrir pelo link */
   if(p.export.site==='pedrapapeltesoura'&&!p.export.siteManual)p.export.site='';
   /* projetos salvos com um roteiro padrão antigo desta engine recebem o roteiro novo */
@@ -3481,8 +3484,8 @@ window.PADRAO={
     for(const j in b.layout)if(!c.layout[j])c.layout[j]=JSON.parse(JSON.stringify(b.layout[j]));
     /* posições antigas da corrente/botão próximo -> novas (centralizadas) */
     const same=(a,o)=>a&&Object.keys(o).every(k=>a[k]===o[k]);
-    const OLD={chain:[{x:40,y:955,w:1160,h:90},{x:420,y:950,w:760,h:90}],next:[{x:1200,y:965,w:200,h:72},{x:1200,y:959,w:200,h:72}],
-      answer:[{x:420,y:840,w:760,h:84}],send:[{x:1200,y:840,w:200,h:84}],echain:[{x:160,y:720,w:1240,h:300}]};
+    const OLD={chain:[{x:40,y:955,w:1160,h:90},{x:420,y:950,w:760,h:90}],next:[{x:1200,y:965,w:200,h:72},{x:1200,y:959,w:200,h:72},{x:1250,y:840,w:165,h:84}],
+      answer:[{x:420,y:840,w:760,h:84},{x:460,y:840,w:600,h:84}],send:[{x:1200,y:840,w:200,h:84},{x:1075,y:840,w:160,h:84}],echain:[{x:160,y:720,w:1240,h:300}]};
     for(const k in OLD)if(OLD[k].some(o=>same(c.layout[k],o)))c.layout[k]=JSON.parse(JSON.stringify(b.layout[k]));
     if(!c.anims.entrada)c.anims.entrada=b.anims.entrada;
     for(const k in c.anims){const a=c.anims[k]||(c.anims[k]={});a.tracks=a.tracks||{};a.tracks.att=a.tracks.att||[];a.tracks.def=a.tracks.def||[];a.events=a.events||[];a.nome=a.nome||k;a.tipo=a.tipo||'vitoria';}
@@ -3529,7 +3532,8 @@ function novoProjeto(modelo){return{roteiroVersao:7,nome:'O que ganha de',cfg:mo
 const ROTEIRO_VERSAO=7;
 let migrou=false;
 function completarProjeto(p){
-  p=p||{};p.cfg=PADRAO.completar(p.cfg||PADRAO.novo());p.assets=p.assets||{};p.export=Object.assign(clone(EXPORT0),p.export||{});p.nome=p.nome||'O que ganha de';
+  p=p||{};const lay0=JSON.stringify((p.cfg&&p.cfg.layout)||null);p.cfg=PADRAO.completar(p.cfg||PADRAO.novo());
+  if(lay0!=='null'&&lay0!==JSON.stringify(p.cfg.layout))migrou=true;p.assets=p.assets||{};p.export=Object.assign(clone(EXPORT0),p.export||{});p.nome=p.nome||'O que ganha de';
   /* o nome fixo antigo travava o site errado: agora o padrão é descobrir pelo link */
   if(p.export.site==='pedrapapeltesoura'&&!p.export.siteManual)p.export.site='';
   /* projetos salvos com um roteiro padrão antigo desta engine recebem o roteiro novo */

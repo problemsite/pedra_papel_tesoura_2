@@ -140,7 +140,9 @@ body.nonome .ent .name{display:none}
 .btnbox{pointer-events:none}.btnbox>button{pointer-events:auto}
 #nextBtn{visibility:hidden}
 #nextBtn.show{visibility:visible}
-#game.resultado [data-l="send"]{visibility:hidden}
+#game [data-l="next"]{display:none}
+#game.resultado [data-l="next"]{display:flex}
+#game.resultado [data-l="send"]{display:none}
 .overlay{pointer-events:none;z-index:20}
 .bigword{font-family:var(--display);line-height:1;color:#fff;-webkit-text-stroke:.04em var(--edge);paint-order:stroke fill;text-shadow:0 .07em 0 var(--edge),0 0 40px rgba(255,255,255,.6);opacity:0}
 .bigword.red{color:var(--bad)}
