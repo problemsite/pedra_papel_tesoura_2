@@ -1,0 +1,404 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Painel ao vivo · O que ganha de...?</title>
+<link rel="icon" type="image/png" href="../favicon.png">
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script><script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script>(function(){var n="pedrapapeltesoura";if(!n&&/github\.io$/.test(location.hostname))n=location.pathname.split('/')[1]||'';window.OQG_SITE=n||'jogo';window.OQG_FIREBASE={"apiKey":"AIzaSyBQzl3bmbAEcyNfwqYj69DZHLjFfydlghI","authDomain":"jogos-github.firebaseapp.com","databaseURL":"https://jogos-github-default-rtdb.firebaseio.com","projectId":"jogos-github","storageBucket":"jogos-github.firebasestorage.app","messagingSenderId":"304376569454","appId":"1:304376569454:web:cd724cf50bef036a37907f"};
+if(/^https?:$/.test(location.protocol)&&!/^(localhost|127\.)/.test(location.hostname))document.write('<script src="/trava.js" data-site="'+window.OQG_SITE+'" data-modo="adm"><\/script>');})();</script>
+</head>
+<body>
+<style>
+:root{--ink:#0e2a47;--muted:#4a6a82;--bg:#dff7ff;--panel:#fff;--field:#f3fbff;--line:#a9dcee;--accent:#1f6bff;--good:#15b863;--bad:#f0344a;--miss:#ff8a1f;--gold:#ffe14d;
+  --display:"Lilita One","Arial Rounded MT Bold",sans-serif;--emoji:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif}
+*,*::before,*::after{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Nunito",system-ui,sans-serif;font-weight:700}
+button{font:inherit;color:inherit;cursor:pointer}
+.wrap{max-width:1100px;margin:0 auto;padding:0 16px 80px}
+.top{position:sticky;top:0;z-index:5;background:var(--bg);padding:12px 0 8px;border-bottom:2px solid var(--line);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.top h1{font-family:var(--display);font-weight:400;font-size:26px;margin:0;flex:1}
+.badge{font-size:12px;background:var(--gold);border:2px solid var(--ink);border-radius:999px;padding:2px 10px}
+.btn{font-family:var(--display);font-size:17px;background:var(--accent);color:#fff;border:3px solid var(--ink);border-radius:14px;box-shadow:0 4px 0 var(--ink);padding:.3em .9em;text-decoration:none;display:inline-block}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.btn.ghost{background:var(--panel);color:var(--ink)}.btn.red{background:var(--bad)}.btn.green{background:var(--good)}
+.mini{font-weight:900;font-size:13px;background:var(--panel);border:2px solid var(--line);border-radius:9px;padding:4px 9px}
+.mini.danger{color:var(--bad)}.mini.on{background:var(--accent);color:#fff;border-color:var(--accent)}
+.sec{background:var(--panel);border:2px solid var(--line);border-radius:18px;padding:16px;margin:16px 0}
+.sec h2{font-family:var(--display);font-weight:400;font-size:23px;margin:0 0 6px}
+.note{margin:0 0 10px;color:var(--muted);font-size:14px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.cols{display:grid;grid-template-columns:1.3fr 1fr;gap:16px}
+@media(max-width:900px){.cols{grid-template-columns:1fr}}
+.live{position:relative;width:100%;aspect-ratio:16/9;background:#000;border-radius:12px;overflow:hidden;border:3px solid var(--ink)}
+.live iframe{position:absolute;left:0;top:0;width:1920px;height:1080px;border:0;transform-origin:0 0}
+.status{font-size:18px;background:var(--field);border:2px solid var(--line);border-radius:12px;padding:10px 12px}
+.status b{font-family:var(--display);font-weight:400;font-size:22px}
+.pl{display:flex;align-items:center;gap:10px;border:2px solid var(--line);border-radius:14px;padding:8px 10px;background:var(--field);margin-top:8px;flex-wrap:wrap}
+.ph{width:54px;height:54px;border-radius:50%;background:#fff center/cover;border:3px solid var(--ink);display:grid;place-items:center;font-family:var(--display);font-size:22px;flex:none}
+.pl .info{flex:1;min-width:140px}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:#aaa;margin-right:6px}
+.dot.on{background:var(--good)}
+input[type=text],input[type=number],select{font:inherit;font-size:15px;color:var(--ink);background:#fff;border:2px solid var(--line);border-radius:10px;padding:6px 9px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}
+th{color:var(--muted);font-size:12px}
+.seg{display:inline-flex;border:3px solid var(--ink);border-radius:14px;overflow:hidden}
+.seg button{font-family:var(--display);font-size:16px;border:0;background:var(--panel);padding:.3em .8em}
+.seg button.on{background:var(--accent);color:#fff}
+pre{font-size:12px;background:var(--field);border:2px solid var(--line);border-radius:10px;padding:10px;overflow:auto;max-height:260px}
+.rot{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.rot ol{margin:0;padding-left:28px;font-size:14px}
+.rot li.erra{color:var(--miss)}.rot li.perde{color:var(--bad)}.rot li.now{background:var(--gold);border-radius:6px}
+.toast{position:fixed;bottom:18px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:8px 16px;border-radius:12px;z-index:50}
+</style>
+<div class="wrap">
+  <div class="top"><h1>⚙️ Painel ao vivo</h1><span class="badge" id="mode"></span><a class="btn ghost" href="../" target="_blank" rel="noopener">Abrir o jogo</a></div>
+  <div class="cols">
+    <div>
+      <div class="sec"><h2>📺 Ao vivo</h2>
+        <div class="live" id="liveBox"><iframe id="liveFr" title="Ao vivo"></iframe></div>
+        <div class="row"><button class="mini" id="liveTog">Esconder</button><button class="mini" id="liveSnd">🔇 Sem som</button><button class="mini" id="liveRe">↻ Recarregar</button></div>
+      </div>
+      <div class="sec"><h2>🎮 Partida</h2>
+        <div class="status" id="st"></div>
+        <div class="row">
+          <button class="btn green" data-a="start">▶ Começar do início</button>
+          <button class="btn" data-a="next">⏭ Próximo passo</button>
+          <button class="btn ghost" data-a="redo">↺ Refazer rodada</button>
+          <button class="btn ghost" data-a="lobby">⏹ Voltar ao lobby</button>
+        </div>
+        <div class="row"><select id="goR"></select><button class="btn ghost" data-a="go">Ir para esta rodada</button></div>
+        <div class="row"><button class="btn red" data-a="restart">🔄 Reiniciar (rodada 1 na hora)</button><button class="btn ghost" data-a="reload">♻ Recarregar a tela de todos</button><button class="btn ghost" data-a="reset">💣 Reset total</button></div>
+        <p class="note" style="margin-top:8px">Reset total também tira todo mundo das vagas e apaga nomes e fotos escolhidos. Recarregar força todas as telas abertas a atualizar (útil depois de subir arquivos novos).</p>
+      </div>
+    </div>
+    <div>
+      <div class="sec"><h2>👥 Jogadores</h2><div id="pls"></div>
+        <div class="row"><label style="display:flex;gap:8px;align-items:center"><input type="checkbox" id="fechar"> Fechar as vagas (ninguém novo entra)</label></div>
+      </div>
+      <div class="sec"><h2>🚪 Na sala agora</h2><p class="note">Todo mundo com o jogo aberto. Banir impede a pessoa de entrar de novo (neste navegador dela).</p><div id="pres"></div></div>
+      <div class="sec"><h2>🚫 Banidos</h2><div id="bans"></div></div>
+      <div class="sec"><h2>⚙️ Ajustes ao vivo</h2>
+        <p class="note">Mudam na hora para todos, sem mexer nos arquivos.</p>
+        <div class="row"><span>Digitação:</span><span class="seg" id="mSeg"><button data-m="">Padrão</button><button data-m="roteiro">🔒 Roteiro</button><button data-m="livre">✍️ Livre</button></span></div>
+        <div class="row"><span>Passar sozinho depois de</span><input type="number" id="autoN" min="0" step="0.5" style="width:90px" placeholder="padrão"><span>seg</span><button class="mini" id="autoOk">Salvar</button></div>
+      </div>
+    </div>
+  </div>
+  <div class="sec"><h2>📋 Roteiro dos youtubers</h2><p class="note">A rodada atual fica marcada em amarelo.</p><div class="rot" id="rot"></div><div class="row"><button class="mini" id="copyRot">📋 Copiar roteiro</button></div></div>
+  <details class="sec"><summary style="cursor:pointer;font-family:var(--display);font-size:20px">🐞 Estado bruto</summary><pre id="raw"></pre></details>
+</div>
+
+<script>window.OQG_CFG={"formato":2,"title":"O que ganha de...?","subtitle":"Pedra, papel, tesoura... e depois só cresce.","question":"O que ganha de {item}?","turnText":"Vez de {jogador}","passText":"A vez passou para {jogador}!","placeholderMine":"Sua vez! Digite aqui...","placeholderOther":"{jogador} está pensando...","sendLabel":"Enviar","nextLabel":"Próximo","endLabel":"Ver final","startLabel":"Começar","leaveLabel":"Sair da vaga","joinLabel":"Entrar","youLabel":"Você","busyLabel":"Ocupado","freeLabel":"Livre","lobbyHint":"Clique numa vaga livre (na foto, no nome ou em Entrar) para jogar.","waitHint":"Esperando o outro jogador entrar...","readyHint":"Tudo pronto! Qualquer jogador pode começar.","closedHint":"As vagas estão fechadas no momento.","spectHint":"Assistindo ao vivo 👀","counterLabel":"Sequência","loseText":"{perdedor} PERDEU! 💔","endTitle":"FIM DE JOGO","endText":"{perdedor} tentou vencer {final} e perdeu. {vencedor} venceu com sequência de {n}!","heartOn":"❤️","heartOff":"🖤","typingMode":"roteiro","lives":4,"sound":true,"musicVolume":0.5,"sfxVolume":1,"showCounter":true,"showChain":true,"musicaLobby":"","musicaFim":"","tempo":{"velocidade":1,"enviar":90,"esperaNivel":1000,"nivelIntro":1700,"pausa":80,"campeaoDur":400,"campeaoY":-10,"campeaoEscala":1.15,"autoNext":4,"loseDelay":4},"players":{"p1":{"name":"Problems","photo":""},"p2":{"name":"Convidado","photo":""}},"sons":{"enviar":{"preset":"enviar","arq":"","vol":1,"mudo":false},"tecla":{"preset":"tecla","arq":"","vol":1,"mudo":false},"pop":{"preset":"pop","arq":"","vol":1,"mudo":false},"whoosh":{"preset":"whoosh","arq":"","vol":1,"mudo":false},"acerto":{"preset":"acerto","arq":"","vol":1,"mudo":false},"erro":{"preset":"erro","arq":"","vol":1,"mudo":false},"perda":{"preset":"perda","arq":"","vol":1,"mudo":false},"nivel":{"preset":"nivel","arq":"","vol":1,"mudo":false},"coracao":{"preset":"coracao","arq":"","vol":1,"mudo":false}},"estilo":{"fonteTitulo":"Lilita One","fonteTexto":"Nunito","itemTam":200,"nomeTam":34,"mostrarNome":true,"arenaCorta":true,"tituloCor":"#ffffff","vereditoCor":"#ffffff","cores":{"ink":"#0e2a47","card":"#ffffff","edge":"#0e2a47","accent":"#1f6bff","btxt":"#ffffff","good":"#15b863","bad":"#f0344a","miss":"#ff8a1f","gold":"#ffe14d"}},"camera":{"x":1420,"y":790,"w":480,"h":270,"mostrar":true},"layout":{"ltitle":{"x":160,"y":140,"w":1600,"h":210,"fs":130},"lsub":{"x":360,"y":360,"w":1200,"h":60,"fs":30},"slots":{"x":360,"y":440,"w":1200,"h":370,"fs":26},"lbuttons":{"x":560,"y":830,"w":800,"h":84,"fs":32},"lhint":{"x":410,"y":930,"w":1000,"h":50,"fs":22},"p1":{"x":40,"y":30,"w":580,"h":96,"fs":34},"p2":{"x":1300,"y":30,"w":580,"h":96,"fs":34},"counter":{"x":760,"y":26,"w":400,"h":56,"fs":26},"level":{"x":760,"y":90,"w":400,"h":50,"fs":24,"vis":true},"verdict":{"x":210,"y":150,"w":1500,"h":180,"fs":74,"vis":true},"sub":{"x":310,"y":330,"w":1300,"h":56,"fs":28},"arena":{"x":0,"y":380,"w":1920,"h":440},"pass":{"x":560,"y":392,"w":800,"h":76,"fs":30},"answer":{"x":510,"y":840,"w":680,"h":84,"fs":34},"send":{"x":1210,"y":840,"w":200,"h":84,"fs":32},"chain":{"x":510,"y":950,"w":900,"h":90},"next":{"x":1210,"y":840,"w":200,"h":84,"fs":30},"ewin":{"x":760,"y":40,"w":400,"h":300,"fs":30},"etitle":{"x":160,"y":350,"w":1600,"h":150,"fs":110},"etext":{"x":310,"y":510,"w":1300,"h":110,"fs":32},"elose":{"x":660,"y":630,"w":600,"h":70,"fs":28},"echain":{"x":500,"y":720,"w":920,"h":300},"lvintro":{"x":0,"y":340,"w":1920,"h":400,"fs":120},"gotext":{"x":0,"y":390,"w":1920,"h":300,"fs":130}},"anims":{"entrada":{"nome":"Entrada (antes de toda rodada)","tipo":"especial","fim":"nenhum","tracks":{"att":[{"x":-920,"y":0,"sx":0.6,"r":-30,"t":0,"e":"cubic-bezier(.2,.9,.3,1.2)"},{"x":-320,"y":0,"sx":1.1,"r":6,"t":256,"e":"cubic-bezier(.2,.9,.3,1.2)"},{"x":-320,"y":0,"t":320}],"def":[{"x":0,"y":0,"t":0,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":320,"y":0,"t":256}]},"events":[{"t":0,"tipo":"som","preset":"whoosh"}]},"esmagar":{"nome":"Esmagar (cai em cima)","tipo":"vitoria","fim":"centro","tracks":{"att":[{"x":-320,"y":0,"t":0,"e":"ease-in"},{"x":64,"y":-234,"sx":1.1,"r":-20,"t":286,"e":"ease-in"},{"x":320,"y":-27,"sx":1.15,"sy":0.9,"t":520,"e":"cubic-bezier(.3,1.5,.5,1)"},{"x":320,"y":-72,"sx":0.95,"sy":1.1,"t":712,"e":"cubic-bezier(.3,1.5,.5,1)"},{"x":320,"y":0,"t":904}],"def":[{"x":320,"y":0,"t":0},{"x":320,"y":0,"t":520,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":320,"y":63,"sx":1.6,"sy":0.12,"o":1,"t":728,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":320,"y":68,"sx":1.7,"sy":0.05,"o":0,"t":1040}]},"events":[{"t":520,"tipo":"som","preset":"hit"},{"t":520,"tipo":"tremer","forca":9},{"t":520,"tipo":"flash","forca":0.6,"nivelMin":4},{"t":520,"tipo":"burst","x":320,"y":36,"emojis":"💥 ⭐ 💨","n":9}]},"embrulhar":{"nome":"Embrulhar","tipo":"vitoria","fim":"centro","tracks":{"att":[{"x":-320,"y":0,"t":0,"e":"cubic-bezier(.5,0,.3,1.3)"},{"x":320,"y":0,"sx":1.7,"t":448,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":320,"y":0,"sx":1.55,"sy":1.85,"r":-8,"t":618,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":320,"y":0,"sx":1.85,"sy":1.55,"r":8,"t":788,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":320,"y":0,"sx":1.7,"r":-4,"t":958,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":320,"y":0,"t":1128}],"def":[{"x":320,"y":0,"t":0},{"x":320,"y":0,"t":448,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":320,"y":0,"sx":0.2,"o":0,"t":768}]},"events":[{"t":448,"tipo":"som","preset":"hit"},{"t":1128,"tipo":"burst","x":320,"y":0,"emojis":"✨","n":7}]},"cortar":{"nome":"Cortar ao meio","tipo":"vitoria","fim":"centro","tracks":{"att":[{"x":-320,"y":0,"t":0,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":128,"y":-180,"sx":1.1,"r":-40,"t":304,"e":"ease-in"},{"x":512,"y":144,"sx":1.1,"r":40,"t":480,"e":"cubic-bezier(.3,1.3,.5,1)"},{"x":320,"y":0,"t":896}],"def":[{"x":320,"y":0,"t":0,"e":"steps(1,end)"},{"x":320,"y":0,"o":0,"t":480}]},"events":[{"t":304,"tipo":"som","preset":"whoosh"},{"t":480,"tipo":"som","preset":"hit"},{"t":480,"tipo":"flash","forca":0.5},{"t":480,"tipo":"tremer","forca":6},{"t":480,"tipo":"pedacos","formato":"meio","x":320,"y":0,"dur":1000,"forca":1}]},"queimar":{"nome":"Queimar","tipo":"vitoria","fim":"centro","tracks":{"att":[{"x":-320,"y":0,"t":0,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":48,"y":0,"sx":1.2,"t":360},{"x":48,"y":0,"sx":1.2,"t":1480,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":160,"y":0,"t":1736}],"def":[{"x":320,"y":0,"t":0},{"x":320,"y":0,"f":"brightness(1) sepia(0) saturate(1) grayscale(0) blur(0px)","t":360,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":327,"y":0,"f":"brightness(.7) sepia(1) saturate(3) grayscale(0) blur(0px)","t":696,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":313,"y":0,"t":920,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":320,"y":10,"sx":0.8,"f":"brightness(.15) sepia(0) saturate(1) grayscale(1) blur(0px)","o":1,"t":1256,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":320,"y":40,"sx":0.4,"f":"brightness(0) sepia(0) saturate(1) grayscale(1) blur(5px)","o":0,"t":1480}]},"events":[{"t":360,"tipo":"som","preset":"hit"},{"t":360,"tipo":"som","preset":"whoosh"},{"t":360,"tipo":"burst","x":320,"y":40,"emojis":"🔥","n":16,"sobe":216,"larg":100,"jx":140,"escalonar":55,"dur":900,"tam":[30,60]},{"t":1480,"tipo":"burst","x":320,"y":0,"emojis":"💨","n":5,"sobe":144,"larg":200,"dur":900}]},"engolir":{"nome":"Engolir (espiral)","tipo":"vitoria","fim":"centro","tracks":{"att":[{"x":-320,"y":0,"t":0,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":0,"y":0,"sx":1.4,"t":400,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":0,"y":0,"sx":1.25,"t":640,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":0,"y":0,"sx":1.5,"t":880,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":0,"y":0,"sx":1.3,"t":1120,"e":"cubic-bezier(.3,1.5,.5,1)"},{"x":0,"y":0,"sx":1.7,"sy":1.2,"t":1304,"e":"cubic-bezier(.3,1.5,.5,1)"},{"x":0,"y":0,"t":1488}],"def":[{"x":320,"y":0,"t":0},{"x":320,"y":0,"t":400,"e":"ease-in"},{"x":128,"y":-63,"sx":0.7,"r":300,"t":760,"e":"ease-in"},{"x":0,"y":0,"sx":0.05,"r":720,"o":0,"t":1120}]},"events":[{"t":400,"tipo":"som","preset":"whoosh"},{"t":1120,"tipo":"som","preset":"hit"},{"t":1120,"tipo":"tremer","forca":9},{"t":1120,"tipo":"flash","forca":0.5,"nivelMin":4}]},"explodir":{"nome":"Explodir","tipo":"vitoria","fim":"centro","tracks":{"att":[{"x":-320,"y":0,"t":0,"e":"ease-in"},{"x":-360,"y":0,"sx":0.9,"sy":1.1,"r":-10,"t":147,"e":"ease-in"},{"x":260,"y":0,"sx":1.1,"sy":0.95,"r":10,"t":368,"e":"cubic-bezier(.3,1.4,.5,1)"},{"x":96,"y":0,"t":784}],"def":[{"x":320,"y":0,"t":0,"e":"steps(1,end)"},{"x":320,"y":0,"o":0,"t":368}]},"events":[{"t":368,"tipo":"som","preset":"boom"},{"t":368,"tipo":"flash","forca":0.9},{"t":368,"tipo":"tremer","forca":15},{"t":368,"tipo":"burst","x":320,"y":0,"emojis":"💥 🔥 ✨ 💨","n":24,"dist":306,"tam":[30,72],"dur":1050}]},"desintegrar":{"nome":"Desintegrar (glitch)","tipo":"vitoria","fim":"centro","tracks":{"att":[{"x":-320,"y":0,"t":0,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":-128,"y":0,"sx":1.2,"r":-8,"t":152,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":-128,"y":0,"sx":1.15,"t":304},{"x":-128,"y":0,"sx":1.15,"t":1111,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":-128,"y":0,"sx":1.15,"t":1112,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":-64,"y":0,"t":1352}],"def":[{"x":320,"y":0,"t":0},{"x":320,"y":0,"o":1,"f":"hue-rotate(0deg) saturate(1) blur(0px)","t":304,"e":"steps(1,end)"},{"x":306,"y":7,"sx":0.98,"sy":0.94,"f":"hue-rotate(263deg) saturate(2.6) blur(0px)","o":0.6,"t":350,"e":"steps(1,end)"},{"x":327,"y":4,"sx":1.03,"sy":1.04,"f":"hue-rotate(229deg) saturate(3.5) blur(0px)","o":0.55,"t":396,"e":"steps(1,end)"},{"x":316,"y":3,"sx":1.06,"sy":0.91,"f":"hue-rotate(246deg) saturate(2.4) blur(0px)","o":0.95,"t":442,"e":"steps(1,end)"},{"x":329,"y":-6,"sx":1.02,"sy":1.08,"f":"hue-rotate(248deg) saturate(2.9) blur(0px)","o":0.75,"t":489,"e":"steps(1,end)"},{"x":332,"y":7,"sx":0.99,"sy":0.97,"f":"hue-rotate(301deg) saturate(2.0) blur(0px)","o":0.49,"t":535,"e":"steps(1,end)"},{"x":314,"y":-1,"sx":0.98,"sy":1.09,"f":"hue-rotate(201deg) saturate(3.2) blur(0px)","o":0.93,"t":581,"e":"steps(1,end)"},{"x":308,"y":-4,"sx":1.03,"sy":1,"f":"hue-rotate(152deg) saturate(1.6) blur(0px)","o":0.95,"t":627,"e":"steps(1,end)"},{"x":308,"y":-2,"sx":0.99,"sy":1.03,"f":"hue-rotate(333deg) saturate(2.5) blur(0px)","o":0.5,"t":673,"e":"steps(1,end)"},{"x":317,"y":-3,"sx":0.99,"sy":0.98,"f":"hue-rotate(120deg) saturate(2.6) blur(0px)","o":0.77,"t":719,"e":"steps(1,end)"},{"x":313,"y":7,"sx":1.01,"sy":1.07,"f":"hue-rotate(229deg) saturate(2.9) blur(0px)","o":0.71,"t":766,"e":"steps(1,end)"},{"x":320,"y":3,"sx":1.11,"sy":0.98,"f":"hue-rotate(255deg) saturate(1.8) blur(0px)","o":0.75,"t":812,"e":"steps(1,end)"},{"x":316,"y":-3,"sy":1.06,"f":"hue-rotate(316deg) saturate(1.3) blur(0px)","o":0.89,"t":858,"e":"steps(1,end)"},{"x":320,"y":0,"o":1,"f":"hue-rotate(0deg) saturate(1) blur(0px)","t":904,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":320,"y":0,"sx":1.4,"sy":0.05,"o":0,"f":"hue-rotate(0deg) saturate(1) blur(4px)","t":1112}]},"events":[{"t":304,"tipo":"som","preset":"glitch"},{"t":904,"tipo":"som","preset":"hit"},{"t":904,"tipo":"flash","forca":0.4},{"t":904,"tipo":"burst","x":320,"y":0,"poeira":true,"n":46,"dist":270,"jx":160,"jy":160,"dur":1000}]},"evaporar":{"nome":"Evaporar (ondas de calor)","tipo":"vitoria","fim":"centro","tracks":{"att":[{"x":-320,"y":0,"t":0,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":-224,"y":0,"sx":1.3,"t":173,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":-224,"y":0,"sx":1.15,"t":347,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":-224,"y":0,"sx":1.35,"t":520},{"x":-224,"y":0,"sx":1.35,"t":1719,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":-224,"y":0,"sx":1.35,"t":1720,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":-96,"y":0,"t":2024}],"def":[{"x":320,"y":0,"t":0},{"x":320,"y":0,"f":"brightness(1) saturate(1) blur(0px)","t":520,"e":"ease-in"},{"x":320,"y":0,"sx":1.06,"sy":0.94,"r":-4,"f":"brightness(1.3) saturate(.7) blur(0px)","t":880,"e":"ease-in"},{"x":320,"y":0,"sx":0.94,"sy":1.08,"r":4,"t":1180,"e":"ease-in"},{"x":320,"y":-126,"sx":0.7,"sy":1.25,"f":"brightness(2) saturate(0) blur(12px)","o":0,"t":1720}]},"events":[{"t":520,"tipo":"som","preset":"calor"},{"t":520,"tipo":"aneis","x":-224,"y":0,"ate":64,"qtd":3,"intervalo":220,"dur":1000,"escala":2.3},{"t":520,"tipo":"burst","x":320,"y":0,"emojis":"💨 ☁️ 💨","n":14,"sobe":252,"larg":200,"jx":120,"escalonar":70,"dur":1300,"tam":[30,64]}]},"pular":{"nome":"Pular de susto","tipo":"vitoria","fim":"centro","tracks":{"att":[{"x":-320,"y":0,"t":0,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":-64,"y":0,"sx":1.12,"t":288},{"x":-64,"y":0,"sx":1.12,"t":967,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":-64,"y":0,"sx":1.12,"t":968,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":0,"y":0,"t":1208}],"def":[{"x":320,"y":0,"t":0},{"x":320,"y":0,"t":288,"e":"ease-out"},{"x":320,"y":22,"sx":1.2,"sy":0.7,"t":448,"e":"cubic-bezier(.2,.9,.4,1)"},{"x":320,"y":-468,"sx":0.85,"sy":1.25,"r":-20,"t":968},{"x":320,"y":-468,"sx":0.85,"sy":1.25,"r":-20,"o":0,"t":968}]},"events":[{"t":288,"tipo":"icone","emoji":"❗","x":320,"y":-171,"tam":56,"dur":520},{"t":288,"tipo":"som","preset":"alarme"},{"t":448,"tipo":"som","preset":"pulo"},{"t":448,"tipo":"burst","x":320,"y":63,"emojis":"💨","n":5,"dist":60,"tam":[24,40],"dur":600}]},"ensaboar":{"nome":"Ensaboar","tipo":"vitoria","fim":"centro","tracks":{"att":[{"x":-320,"y":0,"t":0,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":250,"y":-30,"r":-10,"t":336,"e":"ease-in-out"},{"x":390,"y":20,"r":10,"t":544,"e":"ease-in-out"},{"x":250,"y":-20,"r":-10,"t":752,"e":"ease-in-out"},{"x":390,"y":30,"r":10,"t":960,"e":"ease-in-out"},{"x":260,"y":0,"r":-8,"t":1168,"e":"ease-in-out"},{"x":380,"y":-20,"r":8,"t":1376},{"x":380,"y":-20,"r":8,"t":1735,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":380,"y":-20,"r":8,"t":1736,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":96,"y":0,"t":2040}],"def":[{"x":320,"y":0,"t":0},{"x":320,"y":0,"f":"saturate(1) brightness(1)","o":1,"t":1376,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":320,"y":0,"sx":0.95,"f":"saturate(.4) brightness(1.5)","o":0.6,"t":1656,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":320,"y":0,"sx":0.7,"f":"saturate(0) brightness(2.5)","o":0,"t":1936}]},"events":[{"t":336,"tipo":"burst","x":320,"y":0,"emojis":"🫧","n":3,"dist":180,"tam":[22,46],"dur":900,"repetir":7,"intervalo":150},{"t":336,"tipo":"som","preset":"whoosh"},{"t":1376,"tipo":"burst","x":320,"y":0,"emojis":"✨ 🫧","n":10,"dist":200,"tam":[22,44],"dur":900},{"t":1376,"tipo":"som","preset":"brilho"}]},"demolir":{"nome":"Demolir em pedaços","tipo":"vitoria","fim":"centro","tracks":{"att":[{"x":-320,"y":0,"t":0,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":-350,"y":0,"r":6,"t":200,"e":"cubic-bezier(.6,0,.9,.6)"},{"x":210,"y":0,"sx":1.05,"sy":0.95,"r":-4,"t":536,"e":"cubic-bezier(.3,1.3,.5,1)"},{"x":260,"y":0,"r":3,"t":796,"e":"cubic-bezier(.3,1.3,.5,1)"},{"x":64,"y":0,"t":1056}],"def":[{"x":320,"y":0,"t":0,"e":"steps(1,end)"},{"x":320,"y":0,"o":0,"t":536}]},"events":[{"t":0,"tipo":"som","preset":"demolir"},{"t":536,"tipo":"som","preset":"boom"},{"t":536,"tipo":"tremer","forca":14},{"t":536,"tipo":"flash","forca":0.4},{"t":536,"tipo":"pedacos","formato":"quatro","x":320,"y":0,"dur":1150,"forca":1},{"t":536,"tipo":"burst","x":320,"y":0,"emojis":"🧱 💥 💨","n":16,"dist":252,"tam":[22,48],"dur":1000}]},"atolar":{"nome":"Atolar (afunda na lama)","tipo":"vitoria","fim":"centro","tracks":{"att":[{"x":-320,"y":0,"t":0,"e":"cubic-bezier(.4,0,.3,1)"},{"x":320,"y":110,"sx":1.8,"sy":0.35,"t":480},{"x":320,"y":110,"sx":1.8,"sy":0.35,"t":1679,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":320,"y":110,"sx":1.8,"sy":0.35,"t":1680,"e":"cubic-bezier(.3,1.2,.5,1)"},{"x":320,"y":80,"sx":1.9,"sy":0.3,"t":1960,"e":"cubic-bezier(.3,1.2,.5,1)"},{"x":96,"y":0,"t":2240}],"def":[{"x":320,"y":0,"t":0},{"x":320,"y":0,"t":480,"e":"ease-in"},{"x":314,"y":20,"r":-5,"t":720,"e":"ease-in"},{"x":326,"y":40,"r":5,"t":960,"e":"ease-in"},{"x":316,"y":90,"r":-3,"o":1,"t":1380,"e":"ease-in"},{"x":320,"y":150,"sx":0.9,"sy":0.6,"o":0,"t":1680}]},"events":[{"t":0,"tipo":"nome","alvo":"att","mostrar":false,"dur":200},{"t":480,"tipo":"som","preset":"grave"},{"t":480,"tipo":"burst","x":320,"y":90,"emojis":"🟤 💧","n":2,"sobe":72,"larg":240,"jx":200,"dur":600,"tam":[14,24],"repetir":8,"intervalo":160},{"t":1680,"tipo":"som","preset":"hit"},{"t":1680,"tipo":"burst","x":320,"y":80,"emojis":"🟤","n":6,"dist":70,"tam":[16,30],"dur":700},{"t":1920,"tipo":"nome","alvo":"att","mostrar":true,"dur":300}]},"fugir":{"nome":"Fugir de medo","tipo":"vitoria","fim":"centro","tracks":{"att":[{"x":-320,"y":0,"t":0,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":-80,"y":0,"sx":1.12,"t":304},{"x":-80,"y":0,"sx":1.12,"t":1439,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":-80,"y":0,"sx":1.12,"t":1440,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":0,"y":0,"t":1680}],"def":[{"x":320,"y":0,"t":0},{"x":320,"y":0,"t":304,"e":"ease-out"},{"x":320,"y":-99,"sx":0.9,"sy":1.15,"t":443,"e":"ease-out"},{"x":320,"y":0,"sx":1.1,"sy":0.9,"t":581,"e":"ease-out"},{"x":302,"y":0,"sx":0.95,"sy":1.05,"r":-10,"t":720,"e":"cubic-bezier(.45,0,.75,.5)"},{"x":608,"y":-8,"r":6,"t":900,"e":"cubic-bezier(.45,0,.75,.5)"},{"x":992,"y":0,"r":10,"t":1080,"e":"cubic-bezier(.45,0,.75,.5)"},{"x":1760,"y":-8,"r":6,"t":1440},{"x":1760,"y":-8,"r":6,"o":0,"t":1440}]},"events":[{"t":304,"tipo":"icone","emoji":"❗","x":320,"y":-171,"tam":56,"dur":760},{"t":304,"tipo":"som","preset":"alarme"},{"t":720,"tipo":"som","preset":"corrida"},{"t":720,"tipo":"burst","x":320,"y":54,"emojis":"💨","n":2,"dist":40,"tam":[26,42],"dur":700},{"t":860,"tipo":"burst","x":531,"y":54,"emojis":"💨","n":2,"dist":40,"tam":[26,42],"dur":700},{"t":1000,"tipo":"burst","x":742,"y":54,"emojis":"💨","n":2,"dist":40,"tam":[26,42],"dur":700},{"t":1140,"tipo":"burst","x":954,"y":54,"emojis":"💨","n":2,"dist":40,"tam":[26,42],"dur":700},{"t":1280,"tipo":"burst","x":1165,"y":54,"emojis":"💨","n":2,"dist":40,"tam":[26,42],"dur":700}]},"empurrar":{"nome":"Chutar pra longe","tipo":"vitoria","fim":"centro","tracks":{"att":[{"x":-320,"y":0,"t":0,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":-370,"y":0,"r":-15,"t":208,"e":"ease-in"},{"x":240,"y":0,"sx":1.1,"sy":1,"r":10,"t":384,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":128,"y":0,"t":752}],"def":[{"x":320,"y":0,"t":0},{"x":320,"y":0,"t":384,"e":"cubic-bezier(.2,.6,.4,1)"},{"x":1856,"y":-360,"sx":0.5,"r":760,"t":1064},{"x":1856,"y":-360,"sx":0.5,"r":760,"o":0,"t":1064}]},"events":[{"t":384,"tipo":"som","preset":"hit"},{"t":384,"tipo":"tremer","forca":9},{"t":384,"tipo":"burst","x":280,"y":0,"emojis":"💥","n":5},{"t":384,"tipo":"som","preset":"chute"}]},"falha":{"nome":"Falha (bate e cai)","tipo":"erro","fim":"ficar","tracks":{"att":[{"x":-320,"y":0,"t":0},{"x":-320,"y":0,"f":"grayscale(0) brightness(1)","t":0,"e":"ease-in"},{"x":-360,"y":0,"r":-10,"t":192,"e":"ease-in"},{"x":230,"y":0,"sx":1.05,"sy":0.95,"r":10,"t":384},{"x":230,"y":0,"sx":1.05,"sy":0.95,"r":10,"f":"grayscale(0) brightness(1)","t":384,"e":"ease-out"},{"x":-192,"y":-162,"r":-200,"f":"grayscale(.8) brightness(.85)","t":784,"e":"ease-out"},{"x":-288,"y":45,"sx":0.95,"r":-380,"f":"grayscale(1) brightness(.8)","t":1064,"e":"ease-out"},{"x":-288,"y":54,"sy":0.75,"r":-360,"t":1184}],"def":[{"x":320,"y":0,"t":0},{"x":320,"y":0,"t":384,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":330,"y":0,"sx":1.08,"t":496,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":314,"y":0,"sx":1.12,"t":608,"e":"cubic-bezier(.2,.8,.2,1)"},{"x":320,"y":0,"sx":1.1,"t":720}]},"events":[{"t":384,"tipo":"som","preset":"boing"},{"t":384,"tipo":"campeao","alvo":"def"},{"t":1184,"tipo":"burst","x":-288,"y":18,"emojis":"💫 ⭐","n":5,"dist":70,"tam":[20,34]}]},"quicar":{"nome":"Quicar e voltar (erro)","tipo":"erro","fim":"ficar","tracks":{"att":[{"x":-320,"y":0,"t":0,"e":"ease-in"},{"x":180,"y":0,"sx":1.1,"sy":0.9,"t":304},{"x":180,"y":0,"sx":1.1,"sy":0.9,"f":"grayscale(0)","t":304,"e":"ease-out"},{"x":-160,"y":-108,"r":-120,"t":628,"e":"ease-out"},{"x":-352,"y":45,"sx":0.9,"r":-200,"f":"grayscale(1)","t":1024}],"def":[{"x":320,"y":0,"t":0},{"x":320,"y":0,"t":304,"e":"cubic-bezier(.3,1.6,.5,1)"},{"x":320,"y":0,"sx":1.2,"sy":0.85,"t":448,"e":"cubic-bezier(.3,1.6,.5,1)"},{"x":320,"y":0,"sx":1.1,"t":592}]},"events":[{"t":304,"tipo":"som","preset":"boing"},{"t":304,"tipo":"campeao","alvo":"def"},{"t":304,"tipo":"icone","emoji":"🚫","x":320,"y":-162,"tam":70,"dur":800}]}},"start":{"name":"Pedra","emoji":"🪨","img":"asset:mv19d6ca0lf7r"},"levels":[{"name":"Clássico","intro":"","music":"","bg":{"tipo":"radial","c1":"#5fdcf7","c2":"#c9f4ff","c3":"#c9f4ff","pos":45,"meio":75},"part":{"tipo":"hex","qtd":14,"cores":"#ffffff"},"texto":"#0e2a47","vinheta":false,"raios":false,"hex":true,"hexCor":"rgba(255,255,255,.28)","itCor":"","intensidade":1},{"name":"Microscópico","intro":"🔬 COMEÇANDO PEQUENININHO","music":"","bg":{"tipo":"radial","c1":"#f2fff6","c2":"#a6f0c6","c3":"#2f9e74","pos":45,"meio":60},"part":{"tipo":"emoji","qtd":40,"emojis":"○ ◦ ○ •","cores":"#ffffff #d9fff0","vel":0.6},"texto":"#0b3a26","vinheta":false,"raios":false,"hex":true,"hexCor":"rgba(255,255,255,.25)","itCor":"#ff5ca8","intensidade":1.2},{"name":"Bichos","intro":"🐾 CRESCENDO...","music":"","bg":{"tipo":"radial","c1":"#c8f59a","c2":"#5fcf6e","c3":"#1e7a46","pos":60,"meio":55},"part":{"tipo":"emoji","qtd":22,"emojis":"🍃 🍂 🌿","vel":1.2},"texto":"#0b2e14","vinheta":false,"raios":false,"hex":true,"hexCor":"rgba(255,255,255,.18)","itCor":"","intensidade":1.45},{"name":"Gigante","intro":"🏙️ FICOU GIGANTE","music":"","bg":{"tipo":"radial","c1":"#ffd59e","c2":"#ff8f6b","c3":"#4a2f7a","pos":35,"meio":50},"part":{"tipo":"emoji","qtd":14,"emojis":"☁️","vel":0.5,"tam":1.6},"texto":"#ffffff","vinheta":true,"raios":false,"hex":true,"hexCor":"rgba(255,255,255,.14)","itCor":"","intensidade":1.8},{"name":"Espaço","intro":"🪐 SAINDO DO PLANETA","music":"","bg":{"tipo":"radial","c1":"#5a2bd1","c2":"#1a0640","c3":"#07001a","pos":30,"meio":50},"part":{"tipo":"estrelas","qtd":220,"cores":"#ffffff #cdb6ff #8fd0ff"},"texto":"#ffffff","vinheta":true,"raios":false,"hex":true,"hexCor":"rgba(160,120,255,.10)","itCor":"","intensidade":2.1},{"name":"Infinito","intro":"♾️ NÃO TEM MAIS FIM","music":"","bg":{"tipo":"radial","c1":"#fffbe3","c2":"#ffd54a","c3":"#4a2500","pos":38,"meio":40},"part":{"tipo":"emoji","qtd":50,"emojis":"∞ ✦ ∞","cores":"#fff8d6 #ffe27a #ffffff","vel":0.8,"tam":1.3},"texto":"#3a1d00","vinheta":false,"raios":true,"hex":true,"hexCor":"rgba(255,255,255,.28)","itCor":"#1f6bff","intensidade":2.5}],"steps":[{"player":"p2","name":"Papel","emoji":"📄","img":"asset:mv19dtgauqzg4","phrase":"Óbvio que ganha 🙄","sub":"Papel embrulha a pedra.","anim":"embrulhar","result":"ganha","level":1,"audio":"","vel":1},{"player":"p1","name":"Tesoura","emoji":"✂️","img":"asset:mv19eu2932xzv","phrase":"Clássico ✂️","sub":"Tesoura corta o papel.","anim":"cortar","result":"ganha","level":1,"audio":"","vel":1},{"player":"p2","name":"Bactéria","emoji":"🦠","img":"asset:mv19fmzsa4tr6","phrase":"Tesoura não corta o que nem dá pra ver 🦠","sub":"Uma bactéria tem uns 2 milésimos de milímetro.","anim":"desintegrar","result":"ganha","level":2,"audio":"","vel":1},{"player":"p1","name":"Glóbulo Branco","emoji":"⚪","img":"asset:mv19gmatmrbg4","phrase":"O glóbulo branco comeu a bactéria ⚪","sub":"É assim que o seu corpo se defende.","anim":"engolir","result":"ganha","level":2,"audio":"","vel":1},{"player":"p2","name":"Grão de Areia","emoji":"🏖️","img":"asset:mv19hnkt108jn","phrase":"Perto do glóbulo, um grão de areia é uma montanha 🏖️","sub":"É dezenas de vezes maior.","anim":"esmagar","result":"ganha","level":2,"audio":"","vel":1},{"player":"p1","name":"Formiga","emoji":"🐜","img":"asset:mv19i8uhxg4tc","phrase":"A formiga carrega grão de areia o dia inteiro 🐜","sub":"Ela levanta até 50 vezes o próprio peso.","anim":"empurrar","result":"ganha","level":2,"audio":"","vel":1},{"player":"p2","name":"Aranha","emoji":"🕷️","img":"asset:mv19jhj39v5wv","phrase":"A formiga caiu na teia 🕸️","sub":"Tem aranha que só come formiga.","anim":"embrulhar","result":"ganha","level":3,"audio":"","vel":1},{"player":"p1","name":"Lagartixa","emoji":"🦎","img":"asset:mv19k6mhp687k","phrase":"A lagartixa comeu a aranha 🦎","sub":"Por isso é bom ter lagartixa em casa.","anim":"engolir","result":"ganha","level":3,"audio":"","vel":1},{"player":"p2","name":"Cobra","emoji":"🐍","img":"asset:mv19kw0dzlti9","phrase":"A cobra engoliu a lagartixa inteira 🐍","sub":"Nem mastigou.","anim":"engolir","result":"ganha","level":3,"audio":"","vel":1},{"player":"p1","name":"Gavião","emoji":"🦅","img":"asset:mv19m6j4o7q0i","phrase":"O gavião pegou a cobra lá do alto 🦅","sub":"Tem gavião especialista em caçar cobra.","anim":"empurrar","result":"ganha","level":3,"audio":"","vel":1},{"player":"p2","name":"Pombo","emoji":"🐦","img":"asset:mv19mpjgofnxb","phrase":"O pombo virou o almoço do gavião 🐦","sub":"Não foi uma boa ideia.","anim":"falha","result":"erra","level":3,"audio":"","vel":1},{"player":"p1","name":"Urso","emoji":"🐻","img":"asset:mv19na2jflzm1","phrase":"O urso nem liga pro gavião 🐻","sub":"São até 600 kg de urso.","anim":"esmagar","result":"ganha","level":3,"audio":"","vel":1},{"player":"p2","name":"Colmeia","emoji":"🐝","img":"asset:mv19nxli7u5kq","phrase":"O urso AMA mel 🍯","sub":"Pra ele, colmeia é sobremesa.","anim":"falha","result":"erra","level":3,"audio":"","vel":1},{"player":"p1","name":"Elefante","emoji":"🐘","img":"asset:mv19pwhxmafzf","phrase":"6 toneladas de elefante 🐘","sub":"Até o urso sai da frente.","anim":"esmagar","result":"ganha","level":3,"audio":"","vel":1},{"player":"p2","name":"Rato","emoji":"🐭","img":"asset:mv19qedvwgwpu","phrase":"Mito! Elefante não tem medo de rato 🐭","sub":"Isso é só coisa de desenho animado.","anim":"quicar","result":"erra","level":3,"audio":"","vel":1},{"player":"p1","name":"Baleia Azul","emoji":"🐋","img":"asset:mv19rcewrodcn","phrase":"O maior animal que já existiu 🐋","sub":"Pesa tanto quanto uns 30 elefantes.","anim":"engolir","result":"ganha","level":3,"audio":"","vel":1},{"player":"p2","name":"Navio Cruzeiro","emoji":"🛳️","img":"asset:mv19sid79f45q","phrase":"Um navio cruzeiro tem uns 360 metros 🛳️","sub":"Mais de 10 baleias azuis em fila.","anim":"empurrar","result":"ganha","level":4,"audio":"","vel":1},{"player":"p1","name":"Burj Khalifa","emoji":"🏙️","img":"asset:mv19xp33sawix","phrase":"O Burj Khalifa tem 828 metros 🏙️","sub":"Mais que o dobro do navio, de pé.","anim":"esmagar","result":"ganha","level":4,"audio":"","vel":1},{"player":"p2","name":"Everest","emoji":"⛰️","img":"asset:mv1a7whftb8pa","phrase":"O Everest tem 8.849 metros ⛰️","sub":"Dez prédios daqueles empilhados não chegam lá.","anim":"esmagar","result":"ganha","level":4,"audio":"","vel":1},{"player":"p1","name":"Escada","emoji":"🪜","img":"asset:mv1a8oyoumbc6","phrase":"Uma escada até o topo do Everest? 🪜","sub":"Precisaria de quase 9 km de escada.","anim":"falha","result":"erra","level":4,"audio":"","vel":1},{"player":"p2","name":"Nuvem de Tempestade","emoji":"⛈️","img":"asset:mv1a9nmn37c4l","phrase":"A nuvem passa por cima do Everest ⛈️","sub":"Uma nuvem de tempestade pode passar de 12 km de altura.","anim":"embrulhar","result":"ganha","level":4,"audio":"","vel":1},{"player":"p1","name":"Cordilheira","emoji":"🏔️","img":"asset:mv1aac2qr4zzd","phrase":"A cordilheira segura as nuvens 🏔️","sub":"Por isso do outro lado dos Andes quase não chove.","anim":"esmagar","result":"ganha","level":4,"audio":"","vel":1},{"player":"p2","name":"América do Sul","emoji":"🗺️","img":"asset:mv1ab5tj22gkp","phrase":"A América do Sul inteira segura os Andes 🗺️","sub":"A cordilheira é só a \"coluna\" do continente.","anim":"engolir","result":"ganha","level":4,"audio":"","vel":1},{"player":"p1","name":"Pangeia","emoji":"🧩","img":"asset:mv1acgx3rytks","phrase":"Todos os continentes juntos 🧩","sub":"Há 300 milhões de anos era tudo um pedaço só.","anim":"embrulhar","result":"ganha","level":4,"audio":"","vel":1},{"player":"p2","name":"Lua","emoji":"🌙","img":"asset:mv1ad0etv5m8e","phrase":"A Lua mexe no mar do planeta inteiro 🌙","sub":"É ela que faz as marés subirem e descerem.","anim":"empurrar","result":"ganha","level":5,"audio":"","vel":1},{"player":"p1","name":"Júpiter","emoji":"🪐","img":"asset:mv1addlzzjrte","phrase":"Em Júpiter cabem umas 1.300 Terras 🪐","sub":"A Lua perto dele é uma bolinha de gude.","anim":"engolir","result":"ganha","level":5,"audio":"","vel":1},{"player":"p2","name":"Nebulosa","emoji":"🌫️","img":"asset:mv1advzinpaba","phrase":"Uma nebulosa tem trilhões de quilômetros 🌫️","sub":"É dentro delas que nascem as estrelas.","anim":"embrulhar","result":"ganha","level":5,"audio":"","vel":1},{"player":"p1","name":"Telescópio","emoji":"🔭","img":"asset:mv1aec40tay2g","phrase":"O telescópio só tira foto dela 🔭","sub":"Olhar não é ganhar.","anim":"quicar","result":"erra","level":5,"audio":"","vel":1},{"player":"p2","name":"Via Láctea","emoji":"🌌","img":"asset:mv1aeuqihcs6n","phrase":"A nossa galáxia tem milhares de nebulosas 🌌","sub":"E uns 100 bilhões de estrelas (ou mais).","anim":"engolir","result":"ganha","level":5,"audio":"","vel":1},{"player":"p1","name":"Andrômeda","emoji":"💫","img":"asset:mv1aftpkm3xef","phrase":"A galáxia vizinha é ainda maior 💫","sub":"E daqui a uns 4 bilhões e meio de anos ela vai bater na nossa.","anim":"explodir","result":"ganha","level":5,"audio":"","vel":1},{"player":"p2","name":"Universo Observável","emoji":"🌠","img":"asset:mv1agi6n3l4s4","phrase":"Centenas de bilhões de galáxias 🌠","sub":"Andrômeda é só um pontinho nele.","anim":"engolir","result":"ganha","level":5,"audio":"","vel":1},{"player":"p1","name":"Multiverso","emoji":"🔮","img":"asset:mv1ahiz8g7l7e","phrase":"E se existirem vários universos? 🔮","sub":"Cada bolha seria um universo inteiro.","anim":"desintegrar","result":"ganha","level":6,"audio":"","vel":1},{"player":"p2","name":"Googolplex","emoji":"🔢","img":"asset:mv1akn99jcwn7","phrase":"Googolplex: um número maior que tudo isso 🔢","sub":"Nem dá pra escrever ele: não cabe no universo.","anim":"explodir","result":"ganha","level":6,"audio":"","vel":1},{"player":"p1","name":"Infinito","emoji":"♾️","img":"asset:mv1am1bppxo3z","phrase":"O infinito não acaba nunca ♾️","sub":"Qualquer número, por maior que seja, perde.","anim":"engolir","result":"ganha","level":6,"audio":"","vel":1},{"player":"p2","name":"Fim","emoji":"🔚","img":"asset:mv1aljsl5r30o","phrase":"O infinito não tem fim... literalmente 😭","sub":"Ele perdeu pra própria definição.","anim":"falha","result":"perde","level":6,"audio":"","vel":1}]};window.OQG_ASSETS={"mv19d6ca0lf7r":"../IMG/rocha-cinzenta-isolada-em-fundo-transpar.webp","mv19dtgauqzg4":"../IMG/transparent-image-lined-paper-school-boo.webp","mv19eu2932xzv":"../IMG/scissors-png-image.webp","mv19fmzsa4tr6":"../IMG/pngtree-detailed-3d-render-of-a-single-b.webp","mv19gmatmrbg4":"../IMG/white-blood-cell-3d-realistic-icon-analy.webp","mv19hnkt108jn":"../IMG/brown-sand-pile-with-transparent-backgro.webp","mv19i8uhxg4tc":"../IMG/pngtree-3d-realistic-fire-ant-with-detai.webp","mv19jhj39v5wv":"../IMG/canva-inseto-aranha-fofo-mag1eueizxe.webp","mv19k6mhp687k":"../IMG/pngtree-realistic-gecko-illustration-png.webp","mv19kw0dzlti9":"../IMG/cute-pink-snake-png.webp","mv19m6j4o7q0i":"../IMG/pngtree-red-tailed-hawk-swoops-with-fier.webp","mv19mpjgofnxb":"../IMG/pngtree-an-image-of-pigeon-png-image-199.webp","mv19na2jflzm1":"../IMG/pngtree-brown-bear-wild-animal-transpare.webp","mv19nxli7u5kq":"../IMG/bee-tree-hive-clipart-design-illustratio.webp","mv19pwhxmafzf":"../IMG/majestic-african-elephant-with-raised-tr.webp","mv19qedvwgwpu":"../IMG/pngtree-mouse-animal-rat-png-image-14602.webp","mv19rcewrodcn":"../IMG/pngtree-blue-whale-picture-png-image-152.webp","mv19sid79f45q":"../IMG/pngtree-cruise-ship-3d-render-png-image.webp","mv19xp33sawix":"../IMG/pngtree-burj-khalifa-illuminated-at-nigh.webp","mv1a7whftb8pa":"../IMG/high-mountain-peak-covered-in-snow-with.webp","mv1a8oyoumbc6":"../IMG/pngtree-staircase-texture-png-image-1897.webp","mv1a9nmn37c4l":"../IMG/pngtree-dark-storm-clouds-with-electric.webp","mv1aac2qr4zzd":"../IMG/pngtree-mountains-silhouette-png-png-ima.webp","mv1ab5tj22gkp":"../IMG/431645e46fbed475888fa133c024d036-mapa-do.webp","mv1acgx3rytks":"../IMG/pangeia.webp","mv1ad0etv5m8e":"../IMG/pngtree-full-moon-large-photo-png-image.webp","mv1addlzzjrte":"../IMG/pngtree-jupiter-planet-image-on-white-ba.webp","mv1advzinpaba":"../IMG/pngtree-nebula-aesthetic-png-clipart-col.webp","mv1aec40tay2g":"../IMG/telescope-clipart-design-illustration-fr.webp","mv1aeuqihcs6n":"../IMG/pngtree-galaxy-milky-way-concept-png-ima.webp","mv1aftpkm3xef":"../IMG/pngtree-exploring-the-relationship-betwe.webp","mv1agi6n3l4s4":"../IMG/pic2.webp","mv1ahiz8g7l7e":"../IMG/marvel-comics-logo-png-seeklogo-88891.webp","mv1akn99jcwn7":"../IMG/google-png19644.webp","mv1am1bppxo3z":"../IMG/infinity-symbol-icon-png.webp","mv1aljsl5r30o":"../IMG/9175124.webp"};</script>
+<script>/* =====================================================================
+   NÚCLEO — usado pelo jogo, pelo ADM ao vivo e pela engine
+   (regras do roteiro, corações, conexão Firebase/trava ou modo local)
+   ===================================================================== */
+(function(){
+'use strict';
+const clone=o=>o==null?o:JSON.parse(JSON.stringify(o));
+const esc=s=>String(s==null?'':s).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const other=p=>p==='p1'?'p2':'p1';
+const newId=()=>Date.now().toString(36)+Math.random().toString(36).slice(2,7);
+
+/* ---------- roteiro ---------- */
+function derive(cfg,round){
+  let cur=cfg.start,streak=0;
+  const chain=[Object.assign({},cfg.start,{res:'start'})];
+  for(let j=0;j<round&&j<cfg.steps.length;j++){
+    const s=cfg.steps[j];
+    chain.push(Object.assign({},s,{res:s.result}));
+    if(s.result==='ganha'){cur=s;streak++;}
+  }
+  return {cur,streak,chain};
+}
+/* corações: cada erro tira 1; "perde" tira todos. lives 0 = sem corações */
+function hearts(cfg,upto){
+  const L=Math.max(0,Number(cfg.lives)||0),h={p1:L,p2:L};
+  for(let j=0;j<upto&&j<cfg.steps.length;j++){const s=cfg.steps[j];
+    if(s.result==='erra')h[s.player]=Math.max(0,h[s.player]-1);else if(s.result==='perde')h[s.player]=0;}
+  return h;
+}
+/* resultado real da rodada r: um erro que zera os corações vira derrota */
+function outcome(cfg,r){
+  const s=cfg.steps[r];if(!s)return null;
+  if(s.result==='ganha')return'ganha';if(s.result==='perde')return'perde';
+  if(Number(cfg.lives)>0&&hearts(cfg,r+1)[s.player]<=0)return'perde';
+  return'erra';
+}
+function heartsCheck(cfg){
+  const L=Number(cfg.lives)||0,err={p1:0,p2:0};let endAt=-1;
+  for(let j=0;j<cfg.steps.length;j++){const s=cfg.steps[j];if(s.result!=='ganha')err[s.player]++;if(outcome(cfg,j)==='perde'){endAt=j;break;}}
+  return{lives:L,err,endAt,loser:endAt>=0?cfg.steps[endAt].player:null,total:cfg.steps.length};
+}
+
+/* ---------- conexão ---------- */
+function firebaseBackend(root){
+  const db=firebase.database(),auth=firebase.auth();
+  let offset=0;
+  db.ref('.info/serverTimeOffset').on('value',s=>{offset=s.val()||0;});
+  const R=p=>db.ref(root+(p?'/'+p:''));
+  return{
+    mode:'firebase',db,auth,root,
+    on(path,cb){const r=R(path);const h=s=>cb(s.val());r.on('value',h,e=>console.warn('[sem acesso]',path,e&&e.code));return()=>r.off('value',h);},
+    get(path){return R(path).get().then(s=>s.val());},
+    set(path,v){return R(path).set(v===undefined?null:clone(v));},
+    update(path,v){return R(path).update(clone(v));},
+    remove(path){return R(path).remove();},
+    tx(path,fn){return R(path).transaction(fn);},
+    now(){return Date.now()+offset;},
+    uid(){return auth.currentUser?auth.currentUser.uid:'';},
+    ensureUser(){
+      return new Promise(res=>{
+        auth.onAuthStateChanged(u=>{if(u)res(u);else auth.signInAnonymously().catch(e=>console.error(e));});
+      });
+    }
+  };
+}
+function localBackend(key,mem){
+  const K='oqg2-local-'+(key||'jogo');
+  let ch=null;if(!mem){try{ch=('BroadcastChannel' in window)?new BroadcastChannel(K):null;}catch(e){ch=null;}}
+  let memTree={};
+  const read=()=>{if(mem)return memTree;try{return JSON.parse(localStorage.getItem(K))||{};}catch(e){return memTree;}};
+  let tree=read();const subs=[];
+  const parts=p=>String(p||'').split('/').filter(Boolean);
+  const getP=(t,p)=>{const v=parts(p).reduce((o,k)=>o==null?null:o[k],t);return v===undefined?null:v;};
+  function setP(t,p,v){
+    const ps=parts(p);if(!ps.length){return clone(v)||{};}
+    let o=t;
+    for(let i=0;i<ps.length-1;i++){if(typeof o[ps[i]]!=='object'||o[ps[i]]===null)o[ps[i]]={};o=o[ps[i]];}
+    const k=ps[ps.length-1];
+    if(v==null)delete o[k];else o[k]=clone(v);
+    return t;
+  }
+  function fire(){subs.forEach(s=>{const j=JSON.stringify(getP(tree,s.path));if(j!==s.last){s.last=j;s.cb(JSON.parse(j));}});}
+  function commit(){memTree=tree;if(!mem){try{localStorage.setItem(K,JSON.stringify(tree));}catch(e){}}if(ch)ch.postMessage(1);fire();}
+  const refresh=()=>{tree=read();fire();};
+  if(ch)ch.onmessage=refresh;
+  if(!mem)window.addEventListener('storage',e=>{if(e.key===K)refresh();});
+  let bid='';try{bid=localStorage.getItem('oqg2-browser')||'';if(!bid){bid='local-'+newId();localStorage.setItem('oqg2-browser',bid);}}catch(e){bid='local-'+newId();}
+  return{
+    mode:'local',
+    on(path,cb){const s={path,cb,last:undefined};subs.push(s);setTimeout(()=>{s.last=JSON.stringify(getP(tree,path));cb(getP(tree,path));},0);return()=>{const i=subs.indexOf(s);if(i>=0)subs.splice(i,1);};},
+    get(path){return Promise.resolve(clone(getP(tree,path)));},
+    set(path,v){tree=read();tree=setP(tree,path,v);commit();return Promise.resolve();},
+    update(path,obj){tree=read();for(const k in obj)tree=setP(tree,(path?path+'/':'')+k,obj[k]);commit();return Promise.resolve();},
+    remove(path){tree=read();tree=setP(tree,path,null);commit();return Promise.resolve();},
+    tx(path,fn){tree=read();const v=fn(clone(getP(tree,path)));if(v!==undefined){tree=setP(tree,path,v);commit();}return Promise.resolve({committed:v!==undefined});},
+    now(){return Date.now();},
+    uid(){return bid;},
+    ensureUser(){return Promise.resolve({uid:bid,isAnonymous:true});}
+  };
+}
+/* memória pura (teste dentro da engine) */
+function memoryBackend(){return localBackend('mem',true);}
+/* Decide a conexão: com a trava do site principal -> Firebase único "jogos-github";
+   sem trava (arquivo aberto do PC, localhost) -> modo local entre abas. */
+async function connect(site,opts){
+  opts=opts||{};
+  if(opts.forceLocal)return localBackend(site);
+  const q=new URLSearchParams(location.search);
+  if(q.has('local'))return localBackend(site);
+  let ok=false;
+  if(window.Trava&&window.Trava.ready){
+    try{const t=await window.Trava.ready;ok=!!(t&&window.firebase&&firebase.apps&&firebase.apps.length);}catch(e){ok=false;}
+  }else if(window.firebase&&window.OQG_FIREBASE&&/^https?:/.test(location.protocol)&&!/^(localhost|127\.)/.test(location.hostname)){
+    /* sem trava, mas publicado: usa a config reserva */
+    try{if(!firebase.apps.length)firebase.initializeApp(window.OQG_FIREBASE);ok=true;}catch(e){ok=false;}
+  }
+  if(!ok)return localBackend(site);
+  const root=window.DB_ROOT||('sites/'+site);
+  return firebaseBackend(root);
+}
+/* navegador da equipe: avisa a Central quais pastas os jogadores podem gravar */
+async function registerWrites(be,site,nodes){
+  if(be.mode!=='firebase'||!window.Trava||!window.Trava.admin||!site)return;
+  try{
+    const ref=be.db.ref('controle/sites/'+site);
+    const cur=(await ref.once('value')).val();
+    const esc={};nodes.forEach(n=>esc[n]=true);
+    if(!cur)await ref.set({open:false,escrita:esc,t:firebase.database.ServerValue.TIMESTAMP});
+    else{const miss=nodes.filter(n=>!(cur.escrita&&cur.escrita[n]));for(const n of miss)await ref.child('escrita/'+n).set(true);}
+  }catch(e){console.warn('controle',e);}
+}
+
+/* ---------- controle da partida ---------- */
+function startGame(be,round){
+  round=round||0;
+  return be.tx('game',g=>({status:'playing',round,phase:'ask',typed:'',revealAt:0,seq:((g&&g.seq)||0)+1}));
+}
+function toLobby(be){return be.tx('game',g=>({status:'lobby',round:0,phase:'ask',typed:'',revealAt:0,seq:((g&&g.seq)||0)+1}));}
+function advance(be,cfg,expect){
+  const now=be.now();
+  return be.tx('game',g=>{
+    if(g===null)return null;
+    if(!g||g.status!=='playing')return;
+    if(expect&&(g.round!==expect.round||g.phase!==expect.phase))return;
+    const st=cfg.steps[g.round];const seq=(g.seq||0)+1;
+    if(!st)return Object.assign({},g,{status:'end',seq});
+    if(g.phase==='ask')return Object.assign({},g,{phase:'reveal',typed:st.name,revealAt:now,seq});
+    if(outcome(cfg,g.round)==='perde'||g.round>=cfg.steps.length-1)return Object.assign({},g,{status:'end',seq});
+    return Object.assign({},g,{round:g.round+1,phase:'ask',typed:'',revealAt:0,seq});
+  });
+}
+function redoRound(be){
+  return be.tx('game',g=>{if(g===null)return null;if(!g)return;return Object.assign({},g,{status:'playing',phase:'ask',typed:'',revealAt:0,seq:(g.seq||0)+1});});
+}
+
+/* ---------- mídias ---------- */
+const assetUrl=ref=>{
+  if(!ref)return'';const A=window.OQG_ASSETS||{};
+  if(typeof ref==='string'&&ref.indexOf('asset:')===0)return A[ref.slice(6)]||'';
+  return ref;
+};
+function readDataURL(file){return new Promise((res,rej)=>{const fr=new FileReader();fr.onerror=rej;fr.onload=()=>res(fr.result);fr.readAsDataURL(file);});}
+async function resizeImage(file,max){
+  const src=await readDataURL(file);
+  return new Promise((res,rej)=>{const im=new Image();im.onerror=rej;im.onload=()=>{
+    const s=Math.min(1,max/Math.max(im.width,im.height));const c=document.createElement('canvas');
+    c.width=Math.max(1,Math.round(im.width*s));c.height=Math.max(1,Math.round(im.height*s));
+    c.getContext('2d').drawImage(im,0,0,c.width,c.height);
+    let u=c.toDataURL('image/webp',.85);if(u.indexOf('data:image/webp')!==0)u=c.toDataURL('image/png');res(u);};im.src=src;});
+}
+
+window.OQG=Object.assign(window.OQG||{},{clone,esc,other,newId,derive,hearts,outcome,heartsCheck,
+  connect,localBackend,memoryBackend,registerWrites,startGame,toLobby,advance,redoRound,assetUrl,readDataURL,resizeImage,
+  ESCRITA:['players','game','presenca']});
+})();
+</script>
+<script>/* =====================================================================
+   PAINEL AO VIVO (ADM do site) — controlar a partida, expulsar/banir,
+   assistir ao vivo. Tudo o que é conteúdo do jogo se edita na engine.
+   ===================================================================== */
+(function(){
+'use strict';
+const O=window.OQG,esc=O.esc,cfg=window.OQG_CFG;
+const $=id=>document.getElementById(id);
+const SITE=window.OQG_SITE||'jogo';
+let be=null,G=null,P={},PR={},BAN={},AJ={};
+function toast(m){const t=document.createElement('div');t.className='toast';t.textContent=m;document.body.appendChild(t);setTimeout(()=>t.remove(),2000);}
+const pName=s=>(P[s]&&P[s].name)||cfg.players[s].name;
+const pPhoto=s=>(P[s]&&P[s].photo)||O.assetUrl(cfg.players[s].photo)||'';
+const online=s=>!!(P[s]&&P[s].client&&be.now()-(P[s].seen||0)<25000);
+const ago=t=>{const s=Math.round((be.now()-(t||0))/1000);return s<60?s+'s':Math.round(s/60)+'min';};
+
+/* ---------- ao vivo ---------- */
+let mudo=true,liveOn=true;
+function liveSrc(){return '../?assistir'+(mudo?'&mudo':'');}
+function fitLive(){const b=$('liveBox'),f=$('liveFr');f.style.transform=`scale(${b.clientWidth/1920})`;}
+new ResizeObserver(fitLive).observe($('liveBox'));
+$('liveFr').src=liveSrc();
+$('liveTog').onclick=()=>{liveOn=!liveOn;$('liveBox').style.display=liveOn?'':'none';$('liveTog').textContent=liveOn?'Esconder':'Mostrar';if(liveOn&&!$('liveFr').src)$('liveFr').src=liveSrc();};
+$('liveSnd').onclick=()=>{mudo=!mudo;$('liveSnd').textContent=mudo?'🔇 Sem som':'🔊 Com som';$('liveFr').src=liveSrc();};
+$('liveRe').onclick=()=>{$('liveFr').src=liveSrc();};
+
+/* ---------- partida ---------- */
+function renderStatus(){
+  const g=G||{status:'lobby'};const n=cfg.steps.length;let html='';
+  if(g.status==='playing'){
+    const s=cfg.steps[g.round]||{};const cur=O.derive(cfg,g.round).cur;const lv=(cfg.levels[(s.level||1)-1]||{}).name||'';
+    html=`<b>Rodada ${g.round+1} de ${n}</b> · ${g.phase==='ask'?'esperando resposta':'mostrando resultado'}<br>
+      ${esc(cur.name)} → <b style="font-size:18px">${esc(s.name)}</b> · vez de ${esc(pName(s.player))} · ${s.result==='ganha'?'✅ ganha':s.result==='erra'?'❌ erra':'💀 perde'} · fase ${esc(lv)}
+      ${g.phase==='ask'&&g.typed?`<br>Digitando: “${esc(g.typed)}”`:''}`;
+  }else if(g.status==='end')html='<b>🏁 Tela final</b>';
+  else html='<b>🏠 Lobby</b> · esperando começar';
+  $('st').innerHTML=html;
+  const sel=$('goR');const v=sel.value;
+  sel.innerHTML=cfg.steps.map((s,i)=>`<option value="${i}">${i+1}. ${esc(O.derive(cfg,i).cur.name)} → ${esc(s.name)} (${esc(pName(s.player))})</option>`).join('');
+  sel.value=v||String(g.round||0);
+  $('raw').textContent=JSON.stringify({game:G,players:P,ajustes:AJ},null,2);
+  renderRot();
+}
+document.addEventListener('click',async e=>{
+  const b=e.target.closest('[data-a]');if(!b)return;const a=b.dataset.a;
+  if(a==='start'||a==='restart')await O.startGame(be,0);
+  else if(a==='next')await O.advance(be,cfg);
+  else if(a==='redo')await O.redoRound(be);
+  else if(a==='lobby')await O.toLobby(be);
+  else if(a==='go')await O.startGame(be,+$('goR').value);
+  else if(a==='reload'){await be.set('control/reload',Date.now());toast('Telas recarregando');}
+  else if(a==='reset'){if(!confirm('Reset total? Tira todo mundo das vagas e apaga nomes/fotos.'))return;await be.set('players',null);await be.set('presenca',null);await O.toLobby(be);toast('Feito');}
+});
+
+/* ---------- jogadores ---------- */
+function renderPlayers(){
+  $('pls').innerHTML=['p1','p2'].map(s=>{const ph=pPhoto(s),on=online(s),pl=P[s]||{};
+    return `<div class="pl"><div class="ph" style="${ph?`background-image:url('${esc(ph)}')`:''}">${ph?'':esc((pName(s)[0]||'?').toUpperCase())}</div>
+      <div class="info"><div><span class="dot ${on?'on':''}"></span>${s==='p1'?'Jogador 1':'Jogador 2'} · ${on?'online':pl.client?'saiu há '+ago(pl.seen):'vaga livre'}</div>
+      <div class="row" style="margin-top:4px"><input type="text" value="${esc(pName(s))}" data-nm="${s}" maxlength="20" style="width:150px"><button class="mini" data-pa="nome" data-s="${s}">Salvar nome</button></div></div>
+      <div class="row" style="margin-top:0">
+        ${pl.client?`<button class="mini" data-pa="kick" data-s="${s}">👢 Expulsar da vaga</button>`:''}
+        ${pl.uid?`<button class="mini danger" data-pa="ban" data-s="${s}">🚫 Banir</button>`:''}
+        ${pl.photo?`<button class="mini" data-pa="foto" data-s="${s}">Tirar foto</button>`:''}
+        <button class="mini" data-pa="padrao" data-s="${s}">Nome/foto padrão</button>
+      </div></div>`;}).join('');
+  $('fechar').checked=!!AJ.lobbyFechado;
+}
+async function ban(uid,nome){
+  if(!uid)return;if(!confirm(`Banir ${nome||'esta pessoa'}? Ela não consegue mais entrar numa vaga.`))return;
+  await be.set('banidos/'+uid,{nome:nome||'',t:be.now()});
+  for(const s of ['p1','p2'])if(P[s]&&P[s].uid===uid)await be.update('players/'+s,{client:null,uid:null});
+  toast('Banido');
+}
+document.addEventListener('click',async e=>{
+  const b=e.target.closest('[data-pa]');if(!b)return;const s=b.dataset.s,a=b.dataset.pa;
+  if(a==='nome'){const v=document.querySelector(`[data-nm="${s}"]`).value.trim();if(v){await be.update('players/'+s,{name:v});toast('Nome salvo');}}
+  else if(a==='kick'){await be.update('players/'+s,{client:null,uid:null});toast('Vaga liberada');}
+  else if(a==='ban')await ban(P[s].uid,pName(s));
+  else if(a==='foto')await be.update('players/'+s,{photo:null});
+  else if(a==='padrao')await be.update('players/'+s,{name:null,photo:null});
+  else if(a==='pban'){const p=PR[s]||{};await ban(p.uid,p.name||'visitante');}
+  else if(a==='unban'){await be.remove('banidos/'+s);toast('Desbanido');}
+});
+$('fechar').onchange=e=>be.update('ajustes',{lobbyFechado:e.target.checked||null});
+function renderPres(){
+  const ks=Object.keys(PR||{}).filter(k=>PR[k]&&be.now()-(PR[k].seen||0)<40000);
+  $('pres').innerHTML=ks.length?`<table><tr><th>Quem</th><th>Vaga</th><th>Visto</th><th></th></tr>${ks.map(k=>{const p=PR[k];
+    return `<tr><td>${p.assistindo?'👀 assistindo (painel)':esc(p.name||'visitante')}</td><td>${p.slot?(p.slot==='p1'?'Jogador 1':'Jogador 2'):'—'}</td><td>${ago(p.seen)}</td><td>${!p.assistindo&&p.uid?`<button class="mini danger" data-pa="pban" data-s="${esc(k)}">🚫 Banir</button>`:''}</td></tr>`;}).join('')}</table>`:'<p class="note">Ninguém com o jogo aberto.</p>';
+}
+function renderBans(){
+  const ks=Object.keys(BAN||{});
+  $('bans').innerHTML=ks.length?`<table><tr><th>Nome</th><th>Quando</th><th></th></tr>${ks.map(k=>`<tr><td>${esc((BAN[k]&&BAN[k].nome)||'(sem nome)')}</td><td>${BAN[k]&&BAN[k].t?new Date(BAN[k].t).toLocaleString('pt-BR'):''}</td><td><button class="mini" data-pa="unban" data-s="${esc(k)}">Desbanir</button></td></tr>`).join('')}</table>`:'<p class="note">Ninguém banido.</p>';
+}
+/* ---------- ajustes ---------- */
+function renderAj(){
+  document.querySelectorAll('#mSeg button').forEach(b=>b.classList.toggle('on',(AJ.typingMode||'')===b.dataset.m));
+  if(document.activeElement!==$('autoN'))$('autoN').value=AJ.autoNext!=null?AJ.autoNext:'';
+}
+$('mSeg').onclick=e=>{const b=e.target.closest('button');if(!b)return;be.update('ajustes',{typingMode:b.dataset.m||null});};
+$('autoOk').onclick=()=>{const v=$('autoN').value;be.update('ajustes',{autoNext:v===''?null:Number(v)});toast('Salvo');};
+
+/* ---------- roteiro ---------- */
+function rotLines(pl){return cfg.steps.map((s,i)=>({s,i})).filter(x=>x.s.player===pl);}
+function renderRot(){
+  const cur=G&&G.status==='playing'?G.round:-1;
+  $('rot').innerHTML=['p1','p2'].map(pl=>`<div><b>${esc(pName(pl))}</b><ol>${rotLines(pl).map(({s,i})=>`<li value="${i+1}" class="${s.result} ${i===cur?'now':''}">${esc(s.name)}${s.result==='erra'?' (erra)':s.result==='perde'?' (PERDE)':''}</li>`).join('')}</ol></div>`).join('');
+}
+$('copyRot').onclick=()=>{
+  const t=['ROTEIRO — '+cfg.title,'Começa com: '+cfg.start.name,''];
+  ['p1','p2'].forEach(pl=>{t.push('== '+pName(pl)+' ==');rotLines(pl).forEach(({s,i})=>t.push(`${i+1}. ${s.name}${s.result==='erra'?'  (erra de propósito)':s.result==='perde'?'  (PERDE — fim)':''}`));t.push('');});
+  const txt=t.join('\n');(navigator.clipboard?navigator.clipboard.writeText(txt):Promise.reject()).then(()=>toast('Copiado!'),()=>prompt('Copie:',txt));
+};
+
+/* ---------- conexão ---------- */
+(async function(){
+  be=await O.connect(SITE);await be.ensureUser();
+  $('mode').textContent=be.mode==='firebase'?'🟢 online (Firebase)':'🧪 modo teste local';
+  O.registerWrites(be,SITE,O.ESCRITA);
+  be.on('game',g=>{G=g;renderStatus();});
+  be.on('players',p=>{P=p||{};renderPlayers();renderStatus();});
+  be.on('presenca',p=>{PR=p||{};renderPres();});
+  be.on('banidos',b=>{BAN=b||{};renderBans();});
+  be.on('ajustes',a=>{AJ=a||{};renderAj();renderPlayers();});
+  setInterval(()=>{renderPlayers();renderPres();},5000);
+  renderStatus();
+})();
+})();
+</script>
+</body>
+</html>
