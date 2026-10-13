@@ -1,0 +1,505 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>Painel ADM · O que ganha de...?</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Lilita+One&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#0e2a47;--muted:#4a6a82;--bg:#dff7ff;--panel:#fff;--field:#f3fbff;--line:#a9dcee;--accent:#1f6bff;--good:#15b863;--bad:#f0344a;--miss:#ff8a1f;--gold:#ffe14d;
+  --display:"Lilita One","Arial Rounded MT Bold",sans-serif;--emoji:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif;
+  box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+*,*::before,*::after{box-sizing:inherit}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:"Nunito",system-ui,sans-serif;font-weight:700}
+button{font:inherit;color:inherit;cursor:pointer}
+:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+.wrap{max-width:960px;margin:0 auto;padding:0 16px 80px}
+.top{position:sticky;top:0;z-index:5;background:var(--bg);padding:12px 0 8px;border-bottom:2px solid var(--line)}
+.top .r1{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.top h1{font-family:var(--display);font-weight:400;font-size:26px;margin:0;flex:1}
+#saved{font-weight:900;font-size:14px;min-width:80px}
+nav{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+nav a{font-weight:900;font-size:13px;color:var(--ink);text-decoration:none;background:var(--panel);border:2px solid var(--line);border-radius:999px;padding:3px 10px}
+.btn{font-family:var(--display);font-size:17px;background:var(--accent);color:#fff;border:3px solid var(--ink);border-radius:14px;box-shadow:0 4px 0 var(--ink);padding:.3em .9em}
+.btn:active{transform:translateY(3px);box-shadow:0 1px 0 var(--ink)}
+.btn.ghost{background:var(--panel);color:var(--ink)}
+.btn.red{background:var(--bad)}
+.btn.green{background:var(--good)}
+.mini{font-weight:900;font-size:13px;background:var(--panel);border:2px solid var(--line);border-radius:9px;padding:4px 9px}
+.mini.danger{color:var(--bad)}
+.sec{background:var(--panel);border:2px solid var(--line);border-radius:18px;padding:16px;margin:16px 0;scroll-margin-top:110px}
+.sec h2{font-family:var(--display);font-weight:400;font-size:23px;margin:0 0 4px}
+.note{margin:0 0 12px;color:var(--muted);font-size:14px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px}
+label.f{display:flex;flex-direction:column;gap:4px;font-weight:900;font-size:13px;color:var(--muted)}
+label.f.wide{grid-column:1/-1}
+label.ck{display:flex;gap:8px;align-items:center;font-size:14px}
+input[type=text],input[type=number],input[type=email],input[type=password],select,textarea{font:inherit;font-size:15px;color:var(--ink);background:var(--field);border:2px solid var(--line);border-radius:10px;padding:8px 10px;width:100%}
+textarea{min-height:90px;font-family:ui-monospace,monospace;font-size:12px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-top:10px}
+.modebox{display:flex;align-items:center;gap:12px;flex-wrap:wrap;justify-content:space-between;background:#fff8d6;border:2px solid #e8c547;border-radius:14px;padding:10px 12px;margin-bottom:10px}
+.seg{display:flex;border:3px solid var(--ink);border-radius:14px;overflow:hidden;box-shadow:0 3px 0 var(--ink)}
+.seg button{font-family:var(--display);font-size:17px;border:0;background:var(--panel);padding:.35em .9em}
+.seg button.on{background:var(--accent);color:#fff}
+.srow{display:flex;align-items:center;gap:8px;border:2px solid var(--line);border-radius:12px;padding:6px 8px;margin-top:6px;background:var(--field);cursor:pointer}
+.srow:hover{border-color:var(--accent)}
+.srow.erra{border-left:6px solid var(--miss)}.srow.perde{border-left:6px solid var(--bad)}.srow.ganha{border-left:6px solid var(--good)}
+.srow .n{font-family:var(--display);width:28px;text-align:right;flex:none}
+.srow .th{width:34px;height:34px;display:grid;place-items:center;font-family:var(--emoji);font-size:24px;flex:none}
+.srow .th img{width:100%;height:100%;object-fit:contain}
+.srow .nm{flex:1;min-width:0;font-weight:900;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.srow .who,.srow .lv{font-size:12px;color:var(--muted);white-space:nowrap}
+.srow .car{font-weight:900;width:18px;text-align:center}
+.stepwrap .step{margin-top:4px}
+@media (max-width:560px){.srow .lv{display:none}}
+.step{display:grid;grid-template-columns:auto 1fr;gap:14px;border:2px solid var(--line);border-radius:16px;padding:12px;margin-top:12px;background:var(--field)}
+.step.erra{border-color:var(--miss)}.step.perde{border-color:var(--bad)}
+.pvcol{display:flex;flex-direction:column;gap:6px;width:96px}
+.pv{width:96px;height:96px;border:2px dashed var(--line);border-radius:14px;display:grid;place-items:center;font-family:var(--emoji);font-size:60px;background:var(--panel);padding:4px}
+.pv img{width:100%;height:100%;object-fit:contain}
+.stephead{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:8px}
+.num{font-family:var(--display);font-size:20px}
+.vs{color:var(--muted);font-size:14px;flex:1}
+.aslot{display:flex;align-items:center;gap:6px;flex-wrap:wrap;background:var(--panel);border:2px solid var(--line);border-radius:10px;padding:6px 8px}
+.aslot .ai{flex:1;min-width:120px;font-size:13px;color:var(--muted);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.aslot .al{font-size:13px;font-weight:900;color:var(--ink);width:100%}
+.live{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px}
+.box{background:var(--field);border:2px solid var(--line);border-radius:12px;padding:10px}
+.dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:#aaa;margin-right:6px}
+.dot.on{background:var(--good)}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:6px 8px;border-bottom:1px solid var(--line)}
+th{color:var(--muted);font-size:12px}
+.tag{display:inline-block;padding:1px 8px;border-radius:999px;font-size:12px;font-weight:900;border:2px solid currentColor}
+.tag.ganha{color:var(--good)}.tag.erra{color:var(--miss)}.tag.perde{color:var(--bad)}
+.center{min-height:100vh;display:grid;place-items:center;padding:20px}
+.card{background:var(--panel);border:3px solid var(--ink);border-radius:22px;box-shadow:0 6px 0 var(--ink);padding:24px;width:min(400px,100%);display:flex;flex-direction:column;gap:12px}
+.card h1{font-family:var(--display);font-weight:400;margin:0;font-size:28px}
+.err{color:var(--bad);font-size:14px;min-height:1.2em}
+.warn{background:#fff3c4;border:2px solid #e8c547;border-radius:12px;padding:10px 12px;font-size:14px;margin-top:12px}
+.uid{font-family:ui-monospace,monospace;font-size:12px;background:var(--field);padding:2px 6px;border-radius:6px;word-break:break-all}
+@media (max-width:560px){.step{grid-template-columns:1fr}.pvcol{flex-direction:row;width:auto;align-items:center}}
+</style>
+</head>
+<body>
+
+
+
+<div id="panel" hidden>
+  <div class="wrap">
+    <div class="top">
+      <div class="r1">
+        <h1>⚙️ Painel ADM</h1>
+        <span id="saved"></span>
+        <a class="btn ghost" href="index.html" target="_blank" rel="noopener" style="text-decoration:none">Abrir o jogo</a>
+      </div>
+      <nav>
+        <a href="#s-controle">Controle</a><a href="#s-roteiro">Roteiro</a><a href="#s-geral">Geral</a><a href="#s-jogadores">Jogadores</a>
+        <a href="#s-niveis">Níveis épicos</a><a href="#s-sons">Sons</a><a href="#s-rodadas">Rodadas</a><a href="#s-final">Final</a><a href="#s-backup">Backup</a>
+      </nav>
+    </div>
+    <div id="modeWarn"></div>
+
+    <div class="sec" id="s-controle">
+      <h2>Controle do jogo (ao vivo)</h2>
+      <p class="note">O que você fizer aqui muda na hora na tela dos jogadores.</p>
+      <div class="modebox">
+        <div><b>Modo de digitação</b><div class="note" id="modeHelp" style="margin:2px 0 0"></div></div>
+        <div class="seg"><button data-act="setMode" data-m="roteiro" id="mRot">🔒 Roteiro</button><button data-act="setMode" data-m="livre" id="mLiv">✍️ Livre</button></div>
+      </div>
+      <div id="live"></div>
+      <div class="row">
+        <button class="btn green" data-act="gStart">▶ Começar do início</button>
+        <button class="btn" data-act="gNext">⏭ Próximo passo</button>
+        <button class="btn ghost" data-act="gRedo">↺ Refazer rodada</button>
+        <button class="btn ghost" data-act="gLobby">⏹ Voltar ao lobby</button>
+      </div>
+      <div class="row">
+        <select id="goRound" style="width:auto;max-width:100%"></select>
+        <button class="btn ghost" data-act="gGo">Ir para esta rodada</button>
+      </div>
+      <div class="row">
+        <button class="mini" data-act="freeSlots">🔓 Liberar vagas dos jogadores</button>
+        <button class="mini danger" data-act="resetPlayers">Voltar nomes e fotos dos jogadores ao padrão</button>
+      </div>
+      <h3 style="font-family:var(--display);font-weight:400;margin:18px 0 4px">🐞 Debug</h3>
+      <div class="row" style="margin-top:0">
+        <button class="btn red" data-act="restart">🔄 Reiniciar jogo</button>
+        <button class="btn ghost" data-act="resetAll">💣 Reset total</button>
+        <button class="btn ghost" data-act="reloadAll">♻ Recarregar a tela de todos</button>
+      </div>
+      <p class="note" style="margin-top:8px">Reiniciar volta para a rodada 1 na hora, sem pedir confirmação. Reset total também tira os jogadores das vagas e apaga os nomes e fotos que eles escolheram. Recarregar força todas as telas abertas do jogo a atualizar a página (útil depois de subir código novo no GitHub).</p>
+      <details style="margin-top:8px"><summary style="cursor:pointer;font-weight:900">Ver estado bruto do jogo</summary><pre id="rawState" style="font-size:12px;background:var(--field);border:2px solid var(--line);border-radius:10px;padding:10px;overflow:auto;max-height:260px"></pre></details>
+    </div>
+
+    <div class="sec" id="s-roteiro">
+      <h2>Roteiro para os youtubers</h2>
+      <p class="note">Resumo de quem digita o quê. Copie e mande para o convidado.</p>
+      <div id="heartsCheck"></div>
+      <div id="scriptTable" style="overflow-x:auto"></div>
+      <div class="row"><button class="mini" data-act="copyScript">📋 Copiar roteiro em texto</button></div>
+    </div>
+
+    <div id="form"></div>
+  </div>
+</div>
+
+<input type="file" id="fileImg" accept="image/*" hidden>
+<input type="file" id="fileAudio" accept="audio/*" hidden>
+<input type="file" id="fileJson" accept=".json,application/json" hidden>
+
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-database-compat.js"></script>
+<script src="firebase-config.js?v=9"></script>
+<script src="comum.js?v=9"></script>
+<script>
+(function(){
+'use strict';
+const O=window.OQG,M=O.media,esc=O.esc;
+const $=id=>document.getElementById(id);
+const be=O.makeBackend();
+let cfg=O.mergeCfg(null),G=null,P={},started=false;
+
+/* ---------------- entrada (sem senha) ---------------- */
+$('panel').hidden=false;
+if(be.mode==='firebase'){be.ensureAnon().then(boot);}
+else{
+  $('modeWarn').innerHTML='<div class="warn"><b>Modo teste local.</b> Tudo fica salvo só neste navegador. Abra o jogo em outras abas para testar os dois jogadores. Para usar online, preencha o firebase-config.js (veja o LEIA-ME).</div>';
+  boot();
+}
+
+function showNewScript(){
+  const d=document.createElement('div');d.className='warn';d.id='newScript';d.style.cssText='background:#e3f7ff;border-color:#1f6bff;display:flex;gap:10px;align-items:center;flex-wrap:wrap';
+  d.innerHTML='<span style="flex:1;min-width:220px"><b>Tem um roteiro padrão novo com '+(O.DEFAULT.steps.length+1)+' itens.</b> O que está salvo no banco é o antigo. Usar o novo troca só as rodadas: as imagens e áudios que você enviou continuam nos itens de mesmo nome, e textos, níveis, músicas e sons não mudam.</span><button class="btn" data-act="useNew">📜 Usar o roteiro novo</button><button class="mini" data-act="keepOld">Manter o meu</button>';
+  $('modeWarn').appendChild(d);
+}
+async function boot(){
+  if(started)return;started=true;
+  const raw=await be.get('config');
+  cfg=O.mergeCfg(raw);
+  if(raw&&raw.roteiroVersao!==O.DEFAULT.roteiroVersao)showNewScript();
+  await M.preload(be,cfg);
+  renderForm();renderScript();
+  be.on('game',g=>{G=g;renderLive();});
+  be.on('players',p=>{P=p||{};renderLive();});
+  setInterval(renderLive,5000);
+}
+
+/* ---------------- salvar ---------------- */
+function status(msg,color){const s=$('saved');s.textContent=msg;s.style.color=color||'var(--good)';}
+let saveT;
+function save(){
+  clearTimeout(saveT);
+  return be.set('config',JSON.parse(JSON.stringify(cfg))).then(()=>status('Salvo ✓'),err=>{
+    status(/permission/i.test(String(err&&(err.code||err.message)))?'Sem permissão: confira as regras do banco (veja o LEIA-ME)':'Erro ao salvar','var(--bad)');});
+}
+function saveSoon(){status('Salvando...','var(--muted)');clearTimeout(saveT);saveT=setTimeout(save,500);}
+window.addEventListener('beforeunload',e=>{if(saveT&&$('saved').textContent==='Salvando...'){save();}});
+
+/* ---------------- ao vivo ---------------- */
+const pName=s=>(P[s]&&P[s].name)||cfg.players[s].name;
+const online=s=>!!(P[s]&&P[s].client&&be.now()-(P[s].seen||0)<25000);
+function renderMode(){
+  const m=cfg.typingMode==='livre'?'livre':'roteiro';
+  $('mRot').classList.toggle('on',m==='roteiro');$('mLiv').classList.toggle('on',m==='livre');
+  $('modeHelp').textContent=m==='livre'?'A pessoa digita o que quiser, mas só envia se for a resposta do roteiro (sem ligar para maiúsculas e acentos).':'Qualquer tecla que a pessoa apertar vira a próxima letra da resposta do roteiro.';
+}
+function renderLive(){
+  if(!started)return;renderMode();
+  let st='No lobby (esperando começar)';
+  if(G&&G.status==='playing'){const s=cfg.steps[G.round];
+    st=`Rodada <b>${G.round+1}</b> de ${cfg.steps.length}`+(s?` · vez de <b>${esc(pName(s.player))}</b> · ${G.phase==='ask'?`digitando: “${esc(G.typed||'')}”`:'mostrando resultado'}`:'');}
+  else if(G&&G.status==='end')st='Tela final';
+  $('live').innerHTML=`<div class="live">
+    <div class="box"><div class="note" style="margin:0 0 4px">Situação</div>${st}</div>
+    ${['p1','p2'].map(s=>`<div class="box"><div class="note" style="margin:0 0 4px">${s==='p1'?'Jogador 1':'Jogador 2'}</div><span class="dot ${online(s)?'on':''}"></span>${esc(pName(s))} ${online(s)?'(online)':'(fora)'}</div>`).join('')}
+  </div>`;
+  if($('rawState'))$('rawState').textContent=JSON.stringify({game:G,players:Object.fromEntries(Object.entries(P).map(([k,v])=>[k,Object.assign({},v,{photo:v&&v.photo?'(foto)':''})]))},null,2);
+  const sel=$('goRound'),v=sel.value;
+  sel.innerHTML=cfg.steps.map((s,i)=>`<option value="${i}">Rodada ${i+1}: ${esc(pName(s.player))} digita “${esc(s.name)}”</option>`).join('');
+  if(v!=='')sel.value=v;
+}
+
+/* ---------------- roteiro resumido ---------------- */
+const RES_TXT={ganha:'ganha',erra:'ERRA de propósito (passa a vez)',perde:'ERRA e PERDE o jogo'};
+function renderHeartsCheck(){
+  const c=O.heartsCheck(cfg),el=$('heartsCheck');if(!el)return;
+  if(!c.lives){el.innerHTML='<div class="warn">❤️ Corações desligados. O jogo só acaba numa rodada marcada como “Perde”.</div>';return;}
+  const n1=pName('p1'),n2=pName('p2');
+  let msg=`❤️ <b>${c.lives} corações</b> para cada. Erros no roteiro: ${esc(n1)} ${c.err.p1} · ${esc(n2)} ${c.err.p2}. `;
+  let ok=true;
+  if(c.endAt<0){ok=false;msg+='Ninguém fica sem corações e não tem rodada “Perde”: o jogo termina sem perdedor.';}
+  else if(c.endAt<c.total-1){ok=false;msg+=`<b>${esc(pName(c.loser))} fica sem corações na rodada ${c.endAt+1}</b>, antes do fim do roteiro. As rodadas depois dela nunca vão aparecer.`;}
+  else msg+=`${esc(pName(c.loser))} perde o último coração na rodada ${c.endAt+1}, no final. Tudo certo ✓`;
+  el.innerHTML=`<div class="warn" style="${ok?'background:#e6f9ee;border-color:#15b863':''}">${msg}${ok?'':' <button class="mini" data-act="fitLives">Ajustar corações ao roteiro</button>'}</div>`;
+}
+function renderScript(){
+  renderHeartsCheck();
+  let cur=cfg.start;const L=Number(cfg.lives)||0;
+  const rows=cfg.steps.map((s,i)=>{const tr=`<tr><td>${i+1}</td><td>${esc(pName(s.player))}</td><td>${esc(cur.name)}</td><td><b>${esc(s.name)}</b></td><td><span class="tag ${s.result}">${esc(RES_TXT[s.result]||s.result)}</span></td><td>${esc(cfg.levels[(s.level||1)-1].name)}</td><td>${L?(()=>{const h=O.hearts(cfg,i+1);return '❤️'+h.p1+' / ❤️'+h.p2;})():''}</td></tr>`;if(s.result==='ganha')cur=s;return tr;}).join('');
+  $('scriptTable').innerHTML=`<table><thead><tr><th>#</th><th>Quem</th><th>Pergunta</th><th>Digita</th><th>Resultado</th><th>Nível</th><th>${L?'Corações (J1 / J2)':''}</th></tr></thead><tbody>${rows}</tbody></table>`;
+}
+function scriptText(){
+  let cur=cfg.start;const L=[`ROTEIRO — ${cfg.title}`,`Começa com: ${cfg.start.name} ${cfg.start.emoji||''}`,''];
+  cfg.steps.forEach((s,i)=>{L.push(`${i+1}. ${pName(s.player)}: "O que ganha de ${cur.name}?" → digita "${s.name}" → ${RES_TXT[s.result]}`);if(s.result==='ganha')cur=s;});
+  return L.join('\n');
+}
+
+/* ---------------- formulário ---------------- */
+function getPath(k){return k.split('.').reduce((o,p)=>o==null?o:o[p],cfg);}
+function setPath(k,v){const ps=k.split('.');let o=cfg;for(let i=0;i<ps.length-1;i++)o=o[ps[i]];o[ps[ps.length-1]]=v;}
+const visHTML=it=>{const u=M.resolved(it.img);return u?`<img src="${esc(u)}" alt="">`:esc(it.emoji||'❓');};
+const txt=(k,label,cls='')=>`<label class="f ${cls}">${label}<input type="text" data-k="${k}" value="${esc(getPath(k))}"></label>`;
+const num=(k,label,min,max,step)=>`<label class="f">${label}<input type="number" data-k="${k}" min="${min}" max="${max}" step="${step||1}" value="${esc(getPath(k))}"></label>`;
+const ck=(k,label)=>`<label class="ck"><input type="checkbox" data-k="${k}" ${getPath(k)?'checked':''}> ${label}</label>`;
+const sel=(k,label,opts)=>`<label class="f">${label}<select data-k="${k}">${Object.keys(opts).map(v=>`<option value="${esc(v)}" ${String(getPath(k))===v?'selected':''}>${esc(opts[v])}</option>`).join('')}</select></label>`;
+function audioInfo(r,k){if(!r)return /music$/.test(k||'')?'Nenhuma':/^sfx\./.test(k||'')?'Nenhum (usa o som padrão do jogo)':'Nenhum';if(M.isMedia(r))return'🎵 Arquivo enviado';return'🔗 '+r;}
+const aslot=(k,label)=>`<div class="aslot" data-p="${k}"><span class="al">${label}</span><span class="ai">${esc(audioInfo(getPath(k),k))}</span>
+  <button class="mini" data-act="aplay" data-p="${k}">▶ Ouvir</button><button class="mini" data-act="aup" data-p="${k}">Enviar áudio</button>
+  <button class="mini" data-act="alink" data-p="${k}">Usar caminho/link</button><button class="mini danger" data-act="adel" data-p="${k}">✕</button></div>`;
+function levelOpts(){const o={};cfg.levels.forEach((l,i)=>o[String(i+1)]=`${i+1} · ${l.name}`);return o;}
+function playerOpts(){return{p1:'Jogador 1 · '+cfg.players.p1.name,p2:'Jogador 2 · '+cfg.players.p2.name};}
+
+const open=new Set();
+function stepRow(it,idx){
+  const lv=cfg.levels[(it.level||1)-1];
+  return `<div class="srow ${it.result}" data-act="toggle" data-i="${idx}">
+    <span class="n">${idx+1}</span><span class="th">${visHTML(it)}</span><span class="nm">${esc(it.name||'(sem nome)')}</span>
+    <span class="who">${esc(cfg.players[it.player].name)}</span><span class="lv">${esc(lv?lv.name:'')}</span>
+    <span class="tag ${it.result}">${it.result==='ganha'?'ganha':it.result==='erra'?'erra':'perde'}</span><span class="car">${open.has(idx)?'▾':'▸'}</span></div>
+    ${open.has(idx)?itemCard('steps.'+idx,it,idx):''}`;
+}
+function itemCard(path,it,idx){
+  const isStep=idx!=null;let prev=cfg.start;
+  if(isStep)for(let j=0;j<idx;j++)if(cfg.steps[j].result==='ganha')prev=cfg.steps[j];
+  return `<div class="step ${isStep?it.result:''}" data-path="${path}">
+    <div class="pvcol">
+      <button class="pv" data-act="upload" data-p="${path}" title="Trocar imagem">${visHTML(it)}</button>
+      <button class="mini" data-act="upload" data-p="${path}">🖼️ Imagem</button>
+      ${it.img?`<button class="mini" data-act="nobg" data-p="${path}" title="Tira fundo de uma cor só (branco, verde...)">✂️ Tirar fundo</button><button class="mini danger" data-act="clearimg" data-p="${path}">Tirar imagem</button>`:''}
+    </div>
+    <div>
+      ${isStep?`<div class="stephead"><span class="num">Rodada ${idx+1}</span><span class="vs">responde “O que ganha de ${esc(prev.name)}?”</span>
+        <button class="mini" data-act="up" data-i="${idx}" title="Subir">↑</button><button class="mini" data-act="down" data-i="${idx}" title="Descer">↓</button>
+        <button class="mini" data-act="dup" data-i="${idx}">Duplicar</button><button class="mini danger" data-act="del" data-i="${idx}">Excluir</button></div>`:''}
+      <div class="grid">
+        ${isStep?sel(path+'.player','Quem digita',playerOpts()):''}
+        ${txt(path+'.name','Resposta (o que vai ser digitado)')}
+        ${txt(path+'.emoji','Emoji (se não tiver imagem)')}
+        ${isStep?`
+        ${sel(path+'.result','Resultado',O.RESULTS)}
+        ${sel(path+'.level','Nível épico',levelOpts())}
+        ${sel(path+'.anim','Animação quando ganha',O.ANIMS)}
+        ${txt(path+'.phrase','Frase grande em cima ({vencedor} e {perdedor} funcionam)','wide')}
+        ${txt(path+'.sub','Texto menor embaixo (opcional)','wide')}
+        <div class="wide" style="grid-column:1/-1">${aslot(path+'.audio','Áudio desta resposta (toca quando ela entra)')}</div>`:''}
+      </div>
+    </div></div>`;
+}
+/* aplica o roteiro padrão SEM perder imagens e áudios já enviados (casa pelo nome do item) */
+function applyDefaultKeepMedia(){
+  const key=x=>String(x||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
+  const bank={};
+  [cfg.start,...cfg.steps].forEach(it=>{if(!it)return;const k=key(it.name);if(!k)return;
+    const b=bank[k]||(bank[k]={});if(it.img&&!b.img)b.img=it.img;if(it.audio&&!b.audio)b.audio=it.audio;});
+  let kept=0;
+  const fix=it=>{const b=bank[key(it.name)];if(!b)return it;if(b.img){it.img=b.img;kept++;}if(b.audio)it.audio=b.audio;return it;};
+  cfg.start=fix(O.clone(O.DEFAULT.start));
+  cfg.steps=O.clone(O.DEFAULT.steps).map(fix);
+  cfg.roteiroVersao=O.DEFAULT.roteiroVersao;
+  return kept;
+}
+function refreshStep(i){const w=document.querySelector(`[data-w="${i}"]`);if(w)w.innerHTML=stepRow(cfg.steps[i],i);}
+function renderForm(){
+  const y=scrollY;
+  $('form').innerHTML=`
+  <div class="sec" id="s-geral"><h2>Geral</h2><p class="note">Tudo salva sozinho.</p>
+    <div class="grid">
+      ${txt('title','Título do jogo')}${txt('subtitle','Subtítulo do lobby')}${txt('question','Pergunta (use {item})')}
+      ${txt('turnText','Aviso de vez (use {jogador})')}${txt('passText','Quando alguém erra (use {jogador})')}
+      ${txt('placeholderMine','Caixa: quando é a sua vez')}${txt('placeholderOther','Caixa: vez do outro (use {jogador})')}
+      ${sel('typingMode','Digitação',{roteiro:'Roteiro: qualquer tecla vira a resposta certa',livre:'Livre: digita o que quiser (só envia a resposta do roteiro)'})}
+      ${txt('sendLabel','Botão enviar')}${txt('counterLabel','Nome do contador')}
+      ${num('lives','Corações por jogador (0 = sem corações)',0,10,1)}
+      ${num('autoNext','Avançar sozinho após (segundos, 0 = só no botão)',0,30,.5)}
+      ${num('loseDelay','Tempo da animação de derrota (segundos)',1,15,.5)}
+      ${num('musicVolume','Volume da música (0 a 1)',0,1,.05)}
+    </div>
+    <div class="row">${ck('sound','Sons e músicas')}${ck('showCounter','Mostrar contador')}${ck('showChain','Mostrar corrente de itens')}</div>
+  </div>
+  <div class="sec" id="s-jogadores"><h2>Jogadores</h2><p class="note">Nome e foto padrão de cada vaga. Os jogadores também podem trocar clicando na própria foto ou nome.</p>
+    <div class="grid">
+      ${['p1','p2'].map(s=>`<div class="box"><div class="note" style="margin:0 0 6px">${s==='p1'?'Jogador 1':'Jogador 2'}</div>
+        <div class="row" style="margin:0 0 8px"><button class="pv" data-act="upload" data-p="players.${s}" data-kind="photo" style="width:72px;height:72px;font-size:30px">${cfg.players[s].photo?`<img src="${esc(M.resolved(cfg.players[s].photo))}" alt="">`:'🙂'}</button>
+        ${cfg.players[s].photo?`<button class="mini danger" data-act="clearphoto" data-p="players.${s}">Tirar foto</button>`:''}</div>
+        ${txt('players.'+s+'.name','Nome padrão')}</div>`).join('')}
+    </div>
+  </div>
+  <div class="sec" id="s-niveis"><h2>Níveis épicos</h2><p class="note">Cada rodada tem um nível. Quanto maior, mais o fundo, as partículas e os tremores ficam épicos. Nível sem música continua a música do nível anterior.</p>
+    ${cfg.levels.map((l,i)=>`<div class="step" style="grid-template-columns:1fr"><div class="grid">
+      <div class="num" style="grid-column:1/-1">Nível ${i+1}</div>
+      ${txt('levels.'+i+'.name','Nome')}${txt('levels.'+i+'.intro','Texto que aparece ao chegar nele (vazio = nada)')}
+      <div style="grid-column:1/-1">${aslot('levels.'+i+'.music','Música de fundo (em loop)')}</div></div></div>`).join('')}
+    <div class="row"><button class="mini" data-act="autoLevels">Distribuir níveis automaticamente pelas rodadas</button></div>
+  </div>
+  <div class="sec" id="s-sons"><h2>Sons gerais</h2><p class="note">Sem arquivo, o jogo usa sons próprios. Arquivos grandes (músicas) funcionam melhor colocados na pasta <b>audios/</b> do GitHub, usando “Usar caminho/link” com <b>audios/nome.mp3</b>.</p>
+    <div class="grid" style="grid-template-columns:1fr">
+      ${aslot('sfx.acerto','Quando alguém acerta')}${aslot('sfx.erro','Quando alguém erra e passa a vez')}${aslot('sfx.perda','Derrota final')}${aslot('sfx.nivel','Subida de nível')}
+    </div>
+  </div>
+  <div class="sec" id="s-rodadas"><h2>Rodadas</h2>
+    <p class="note">Item inicial e as respostas em ordem. “Erra” passa a vez sem voltar ao início. “Perde” termina o jogo com a animação de derrota.</p>
+    <h3 style="font-family:var(--display);font-weight:400;margin:6px 0 0">Item inicial</h3>
+    ${itemCard('start',cfg.start)}
+    <h3 style="font-family:var(--display);font-weight:400;margin:18px 0 0">Respostas</h3>
+    <div class="row"><span class="note" style="margin:0;flex:1">${cfg.steps.length} rodadas. Clique numa rodada para editar.</span>
+      <button class="mini" data-act="fixAll">🖼️ Ajustar todas as imagens</button><button class="mini" data-act="defaultSteps">📜 Usar o roteiro padrão (50 itens)</button><button class="mini" data-act="openAll">Abrir todas</button><button class="mini" data-act="closeAll">Fechar todas</button></div>
+    <div id="stepList">${cfg.steps.map((s,i)=>`<div class="stepwrap" data-w="${i}">${stepRow(s,i)}</div>`).join('')}</div>
+    <div class="row"><button class="btn" data-act="add">+ Adicionar rodada</button></div>
+  </div>
+  <div class="sec" id="s-final"><h2>Derrota e tela final</h2><div class="grid">
+    ${txt('loseText','Texto gigante na derrota (use {perdedor})','wide')}
+    ${txt('endTitle','Título da tela final')}
+    ${txt('endText','Texto final ({vencedor}, {perdedor}, {final}, {n})','wide')}
+  </div></div>
+  <div class="sec" id="s-backup"><h2>Backup</h2><p class="note">Exporta o roteiro com imagens e áudios enviados. Serve também para passar o que você montou no modo local para a versão online.</p>
+    <textarea id="jsonBox" placeholder="Cole aqui um backup para carregar"></textarea>
+    <div class="row">
+      <button class="mini" data-act="export">💾 Baixar backup</button>
+      <button class="mini" data-act="copy">📋 Copiar backup</button>
+      <button class="mini" data-act="apply">Carregar backup colado</button>
+      <button class="mini" data-act="importfile">📂 Abrir arquivo de backup</button>
+      <button class="mini danger" data-act="reset">Restaurar roteiro padrão</button>
+    </div>
+  </div>`;
+  scrollTo(0,y);renderLive();
+}
+
+$('form').addEventListener('input',e=>{
+  const k=e.target.dataset.k;if(!k)return;
+  let v=e.target.type==='checkbox'?e.target.checked:e.target.type==='number'?Number(e.target.value):e.target.value;
+  if(/\.level$/.test(k))v=Number(v);
+  setPath(k,v);saveSoon();
+  const card=e.target.closest('.step');
+  if(card&&/\.emoji$/.test(k)&&card.querySelector('.pv'))card.querySelector('.pv').innerHTML=visHTML(getPath(card.dataset.path));
+  if(/\.result$/.test(k)){renderForm();}
+  const m=k.match(/^steps\.(\d+)\./);if(m&&/\.(name|emoji|player|level)$/.test(k)){const row=document.querySelector(`[data-w="${m[1]}"] .srow`);if(row){const tmp=document.createElement('div');tmp.innerHTML=stepRow(cfg.steps[+m[1]],+m[1]);row.replaceWith(tmp.firstElementChild);}}
+  if(/(\.name|\.player|\.level|\.result|levels\.\d+\.name)$/.test(k)||/^players\./.test(k)||k==='lives'){renderScript();renderLive();}
+  if(/\.name$/.test(k)&&(k==='start.name'||/^steps\./.test(k)))document.querySelectorAll('.step .vs').forEach((el,i)=>{let prev=cfg.start;for(let j=0;j<i;j++)if(cfg.steps[j].result==='ganha')prev=cfg.steps[j];el.textContent=`responde “O que ganha de ${prev.name}?”`;});
+});
+$('form').addEventListener('change',e=>{const k=e.target.dataset&&e.target.dataset.k;if(k&&/(\.player|levels\.\d+\.name|players\.p\d\.name)$/.test(k))renderForm();});
+
+/* ---------------- mídias ---------------- */
+let upPath=null,upKind=null;
+async function putMedia(dataURL,name){
+  const id=O.newId();await be.set('media/'+id,{data:dataURL,name:name||'',size:dataURL.length});M.cache[id]=dataURL;return'media:'+id;
+}
+function dropMedia(ref){if(M.isMedia(ref)){be.remove('media/'+ref.slice(6)).catch(()=>{});delete M.cache[ref.slice(6)];}}
+async function setMedia(path,ref){const old=getPath(path);setPath(path,ref);await save();if(old&&old!==ref)dropMedia(old);}
+$('fileImg').addEventListener('change',async e=>{
+  const f=e.target.files[0];e.target.value='';if(!f||!upPath)return;
+  try{status('Enviando imagem...','var(--muted)');const u=upKind==='photo'?await O.resizeImage(f,220):await O.processImage(await O.readDataURL(f),{size:360});const ref=await putMedia(u,f.name);
+    await setMedia(upKind==='photo'?upPath+'.photo':upPath+'.img',ref);renderForm();}
+  catch(err){status('Não deu para enviar a imagem','var(--bad)');}
+});
+$('fileAudio').addEventListener('change',async e=>{
+  const f=e.target.files[0];e.target.value='';if(!f||!upPath)return;
+  const mb=f.size/1048576;
+  if(mb>7){alert(`Esse áudio tem ${mb.toFixed(1)} MB, grande demais para enviar pelo painel. Coloque na pasta audios/ do GitHub e use “Usar caminho/link”.`);return;}
+  if(mb>1.5&&!confirm(`Esse áudio tem ${mb.toFixed(1)} MB. Arquivos grandes deixam o jogo mais lento para carregar. Para músicas, o ideal é a pasta audios/ do GitHub. Enviar mesmo assim?`))return;
+  try{status('Enviando áudio...','var(--muted)');const u=await O.readDataURL(f);const ref=await putMedia(u,f.name);await setMedia(upPath,ref);renderForm();}
+  catch(err){status('Não deu para enviar o áudio','var(--bad)');}
+});
+let playing=null;
+async function preview(ref){
+  if(playing){playing.pause();playing=null;return;}
+  const url=await M.resolve(be,ref);if(!url){alert('Nenhum áudio aqui ainda.');return;}
+  playing=new Audio(url);playing.onended=()=>playing=null;playing.play().catch(()=>alert('Não deu para tocar esse áudio. Confira o caminho.'));
+}
+
+/* ---------------- backup ---------------- */
+async function buildBackup(){
+  const media={};for(const r of M.refsOf(cfg)){const id=r.slice(6);const v=await be.get('media/'+id);if(v)media[id]=v;}
+  return{app:'o-que-ganha-de',version:2,config:JSON.parse(JSON.stringify(cfg)),media};
+}
+async function applyBackup(text){
+  try{
+    const d=JSON.parse(text);const c=d.config||d;if(!c||!(c.steps))throw 0;
+    status('Carregando backup...','var(--muted)');
+    if(d.media)for(const id of Object.keys(d.media)){await be.set('media/'+id,d.media[id]);M.cache[id]=d.media[id].data||'';}
+    cfg=O.mergeCfg(c);await save();await M.preload(be,cfg);renderForm();renderScript();status('Backup carregado ✓');
+  }catch(e){status('Esse arquivo não é um backup válido','var(--bad)');}
+}
+$('fileJson').addEventListener('change',e=>{const f=e.target.files[0];e.target.value='';if(!f)return;const fr=new FileReader();fr.onload=()=>applyBackup(fr.result);fr.readAsText(f);});
+function copyText(t,okMsg){
+  const done=()=>status(okMsg||'Copiado ✓');
+  (navigator.clipboard?navigator.clipboard.writeText(t):Promise.reject()).then(done,()=>{const ta=document.createElement('textarea');ta.value=t;document.body.appendChild(ta);ta.select();try{document.execCommand('copy');done();}catch(_){}ta.remove();});
+}
+
+/* ---------------- ações ---------------- */
+document.addEventListener('click',async e=>{
+  const b=e.target.closest('[data-act]');if(!b)return;
+  const a=b.dataset.act,i=+b.dataset.i,p=b.dataset.p;
+  switch(a){
+    case 'gStart':O.startGame(be,0);break;
+    case 'setMode':cfg.typingMode=b.dataset.m;await save();renderMode();renderForm();status(b.dataset.m==='livre'?'Modo livre ativado ✓':'Modo roteiro ativado ✓');break;
+    case 'restart':O.startGame(be,0);status('Jogo reiniciado ✓');break;
+    case 'resetAll':if(confirm('Reset total? Volta ao lobby e tira os jogadores das vagas.')){await be.remove('players');await O.toLobby(be);status('Tudo resetado ✓');}break;
+    case 'reloadAll':await be.set('control/reload',Date.now());status('Telas recarregando ✓');break;
+    case 'toggle':{if(e.target.closest('button'))break;open.has(i)?open.delete(i):open.add(i);refreshStep(i);break;}
+    case 'useNew':{const k=applyDefaultKeepMedia();open.clear();await save();renderForm();renderScript();renderLive();if($('newScript'))$('newScript').remove();status('Roteiro novo carregado ✓ ('+k+' imagens mantidas)');break;}
+    case 'keepOld':cfg.roteiroVersao=O.DEFAULT.roteiroVersao;await save();if($('newScript'))$('newScript').remove();break;
+    case 'defaultSteps':if(confirm('Trocar as rodadas pelo roteiro padrão? As imagens e áudios que você já enviou continuam nos itens com o mesmo nome.')){const k=applyDefaultKeepMedia();open.clear();await save();renderForm();renderScript();renderLive();status('Roteiro padrão carregado ✓ ('+k+' imagens mantidas)');}break;
+    case 'fitLives':{/* corações = erros de quem perde no final; o outro precisa ter menos */
+      const lastP=[...cfg.steps].reverse().find(x=>x.result!=='ganha');
+      if(!lastP){alert('Não tem nenhum erro no roteiro.');break;}
+      const e={p1:0,p2:0};cfg.steps.forEach(x=>{if(x.result!=='ganha')e[x.player]++;});
+      const loser=lastP.player,oth=O.other(loser);
+      if(e[oth]>=e[loser]){alert(`Não dá pra ajustar só com corações: ${pName(oth)} erra ${e[oth]} vezes e ${pName(loser)} erra ${e[loser]}. Quem perde no final precisa ter mais erros.`);break;}
+      cfg.lives=e[loser];await save();renderForm();renderScript();status('Corações ajustados para '+e[loser]+' ✓');break;}
+    case 'openAll':cfg.steps.forEach((_,j)=>open.add(j));renderForm();break;
+    case 'closeAll':open.clear();renderForm();break;
+    case 'gNext':O.advance(be,cfg);break;
+    case 'gRedo':O.redoRound(be);break;
+    case 'gLobby':O.toLobby(be);break;
+    case 'gGo':O.startGame(be,Number($('goRound').value)||0);break;
+    case 'freeSlots':be.update('players',{'p1/client':null,'p2/client':null});break;
+    case 'resetPlayers':if(confirm('Apagar os nomes e fotos que os jogadores escolheram?'))be.remove('players');break;
+    case 'copyScript':copyText(scriptText(),'Roteiro copiado ✓');break;
+    case 'upload':upPath=p;upKind=b.dataset.kind||'img';$('fileImg').click();break;
+    case 'nobg':{const src=await M.resolve(be,getPath(p+'.img'));if(!src)break;status('Tirando o fundo...','var(--muted)');
+      try{const u=await O.processImage(src,{removeBg:true,size:360});const ref=await putMedia(u,'sem-fundo');await setMedia(p+'.img',ref);renderForm();status('Fundo removido ✓ (se ficou estranho, envie a imagem de novo)');}
+      catch(err){status('Não deu para tirar o fundo dessa imagem','var(--bad)');}break;}
+    case 'fixAll':{const items=[['start',cfg.start],...cfg.steps.map((x,j)=>['steps.'+j,x])].filter(([,it])=>it.img);
+      if(!items.length){status('Nenhuma rodada tem imagem ainda');break;}
+      let n=0;for(const [pth,it] of items){status(`Ajustando imagens... ${++n}/${items.length}`,'var(--muted)');
+        try{const src=await M.resolve(be,it.img);if(!src)continue;const u=await O.processImage(src,{size:360});const ref=await putMedia(u,'ajustada');const old=it.img;setPath(pth+'.img',ref);if(old!==ref)dropMedia(old);}catch(err){}}
+      await save();renderForm();status('Imagens ajustadas ✓');break;}
+    case 'clearimg':await setMedia(p+'.img','');renderForm();break;
+    case 'clearphoto':await setMedia(p+'.photo','');renderForm();break;
+    case 'aup':upPath=p;$('fileAudio').click();break;
+    case 'alink':{const v=prompt('Caminho ou link do áudio (ex.: audios/musica.mp3)',M.isMedia(getPath(p))?'':getPath(p)||'');if(v!=null){await setMedia(p,v.trim());renderForm();}break;}
+    case 'adel':await setMedia(p,'');renderForm();break;
+    case 'aplay':preview(getPath(p));break;
+    case 'add':{const last=cfg.steps[cfg.steps.length-1];cfg.steps.push(Object.assign({},O.STEP_BASE,{player:last?O.other(last.player):'p1',name:'Novo item',phrase:'Óbvio que ganha!',level:last?last.level:1}));open.add(cfg.steps.length-1);save();renderForm();renderScript();const w=document.querySelector(`[data-w="${cfg.steps.length-1}"]`);if(w)w.scrollIntoView({block:'center'});break;}
+    case 'dup':cfg.steps.splice(i+1,0,Object.assign({},cfg.steps[i]));open.clear();save();renderForm();renderScript();break;
+    case 'up':if(i>0){open.clear();[cfg.steps[i-1],cfg.steps[i]]=[cfg.steps[i],cfg.steps[i-1]];save();renderForm();renderScript();}break;
+    case 'down':if(i<cfg.steps.length-1){open.clear();[cfg.steps[i+1],cfg.steps[i]]=[cfg.steps[i],cfg.steps[i+1]];save();renderForm();renderScript();}break;
+    case 'del':if(confirm(`Excluir a rodada ${i+1} (${cfg.steps[i].name})?`)){open.clear();cfg.steps.splice(i,1);save();renderForm();renderScript();}break;
+    case 'autoLevels':{const n=cfg.steps.length;cfg.steps.forEach((s,j)=>s.level=Math.min(5,1+Math.floor(j/Math.max(1,n)*5)));save();renderForm();renderScript();break;}
+    case 'export':{status('Preparando backup...','var(--muted)');const d=JSON.stringify(await buildBackup());const url=URL.createObjectURL(new Blob([d],{type:'application/json'}));
+      const l=document.createElement('a');l.href=url;l.download='backup-o-que-ganha-de.json';document.body.appendChild(l);l.click();l.remove();setTimeout(()=>URL.revokeObjectURL(url),2000);status('Backup baixado ✓');break;}
+    case 'copy':{const d=JSON.stringify(await buildBackup());$('jsonBox').value=d;copyText(d,'Backup copiado ✓');break;}
+    case 'apply':applyBackup($('jsonBox').value);break;
+    case 'importfile':$('fileJson').click();break;
+    case 'reset':if(confirm('Voltar tudo ao padrão? Textos e rodadas voltam ao original, mas as imagens e áudios que você enviou continuam nos itens de mesmo nome.')){const old=cfg;cfg=O.mergeCfg(null);cfg.start=old.start;cfg.steps=old.steps;cfg.players=old.players;applyDefaultKeepMedia();await save();renderForm();renderScript();}break;
+  }
+});
+})();
+</script>
+</body>
+</html>
