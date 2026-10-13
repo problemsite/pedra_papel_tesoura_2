@@ -428,7 +428,7 @@ const splitE=s=>Array.isArray(s)?s:String(s||'').trim().split(/\s+/).filter(Bool
 
 let cfg=window.OQG_CFG||{};
 let be=null,G=null,P={},BAN={},AJ={},screen='lobby',cfgReady=false;
-let lastKey='',tok=0,busy=false,resultShown=false,autoT=null,shownLevel=0,typed='';
+let forceInstant=false,lastKey='',tok=0,busy=false,resultShown=false,autoT=null,shownLevel=0,typed='';
 let myUid='',tabId='',myId='',mySlotV=null;
 const tempo=k=>num(cfg.tempo&&cfg.tempo[k],0);
 const SPD=()=>Math.max(.05,num(cfg.tempo&&cfg.tempo.velocidade,1));
@@ -879,12 +879,12 @@ function renderState(){
   if(!cfgReady||!G)return;
   const key=[G.status,G.round,G.phase,G.seq].join('|');
   if(key===lastKey){updateTyped();return;}
-  const prev=lastKey;lastKey=key;tok++;
+  const prev=lastKey;lastKey=key;tok++;const fi=forceInstant;forceInstant=false;
   hardReset();
   if(G.status==='playing'&&cfg.steps.length){
     const r=Math.max(0,Math.min(G.round||0,cfg.steps.length-1));
     show('game');
-    if(G.phase==='reveal'){const inst=G.instant||(be&&be.now()-(G.revealAt||0)>7000);setLevel(inst?cfg.steps[r].level:lvBefore(r),false);playReveal(r,tok,inst);}
+    if(G.phase==='reveal'){const inst=G.instant||fi||(be&&be.now()-(G.revealAt||0)>7000);setLevel(inst?cfg.steps[r].level:lvBefore(r),false);playReveal(r,tok,inst);}
     else{setLevel(lvBefore(r),false);setupAsk(r,prev);}
   }else if(G.status==='end'){show('end');renderEnd();}
   else{show('lobby');setLevel(1,false);renderPlayers();}
@@ -1159,6 +1159,22 @@ if(PREVIEW){
   be.on('game',g=>{G=g||{status:'lobby',round:0,phase:'ask',seq:0};renderState();});
   if(TESTE)return;
   be.on('ajustes',a=>{AJ=a||{};renderPlayers();});
+  /* config ao vivo: o ADM publica e todo mundo atualiza na hora */
+  const loadedRev={};
+  async function loadMedia(c){
+    const need=new Set();JSON.stringify(c).replace(/asset:([a-z0-9]+)/g,(m,id)=>{need.add(id);return m;});
+    const rev=c.mediaRev||{},A=window.OQG_ASSETS=window.OQG_ASSETS||{};
+    await Promise.all([...need].map(async id=>{const r=rev[id]||0;
+      if(A[id]&&loadedRev[id]===r)return;
+      if(A[id]&&!r&&loadedRev[id]===undefined){loadedRev[id]=0;return;}
+      try{const m=await be.get('media/'+id);if(m&&m.data)A[id]=m.data;}catch(e){}loadedRev[id]=r;}));
+  }
+  let cfgSeq=0;
+  be.on('config',async c=>{
+    if(!c||typeof c!=='object'||!Array.isArray(c.steps))return;
+    const my=++cfgSeq;await loadMedia(c);if(my!==cfgSeq)return;
+    cfg=c;applyAll();forceInstant=true;lastKey='';renderState();renderPlayers();
+  });
   be.on('banidos',b=>{BAN=b||{};const ban=!!BAN[myUid];$('banned').classList.toggle('on',ban);if(ban&&mySlotV)leave();});
   let rbase;be.on('control/reload',v=>{if(rbase===undefined){rbase=v;return;}if(v!==rbase)location.reload();});
   setInterval(()=>renderPlayers(),5000);
